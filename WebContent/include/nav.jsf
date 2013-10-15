@@ -1,0 +1,16 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+    
+<nav>
+
+<a href="index.xhtml">Index</a>
+<a href="adminArea.xhtml">Admin</a>
+<a href="registrationArea.xhtml">Registration</a>
+<a href="authArea.xhtml">Auth me</a>
+<a href="logout.xhtml">LOGOUT</a>
+</nav>
+    
+</ui:composition>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"      
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+ 
+    <h:head>
+		<ui:include src="/include/header.jsf" />
+    </h:head>
+    
+    <h:body class="sapUiBody">
+    	<ui:include src="/include/nav.jsf" />
+    	
+    	<div id="shellArea"></div>
+    
+    	<h3>AdminArea</h3>
+    	
+    	<h:form id="personForm">
+    	
+		<h:dataTable id="personTable" value="#{adminBean.persons}" var="person">
+			<h:column>
+				<f:facet name="header">id:</f:facet>
+				#{person.id}
+			</h:column>
+			<h:column>
+				<f:facet name="header">username:</f:facet>
+				#{person.userName}
+			</h:column>
+			<h:column>
+				<f:facet name="header">email:</f:facet>
+				#{person.email}
+			</h:column>
+			<h:column>
+				<f:facet name="header">last login:</f:facet>
+				#{person.lastLogin}
+			</h:column>
+			<h:column>
+				<f:facet name="header">mobile id:</f:facet>
+				#{person.identifier.secret}
+			</h:column>
+			<h:column>
+				<f:facet name="header">hash:</f:facet>
+				#{person.identifier.hashedClientId}
+			</h:column>
+			<h:column>
+				<f:facet name="header">salt:</f:facet>
+				#{person.identifier.salt}
+			</h:column>
+			<h:column>
+				<f:facet name="header">secret:</f:facet>
+				#{person.identifier.secret}
+			</h:column>
+			<h:column>
+				<f:facet name="header">Date:</f:facet>
+				#{person.identifier.created}
+			</h:column>
+		</h:dataTable>
+    	
+    	<h:outputText value="#{adminBean.output}" />
+    	
+    	<h:inputText value="#{adminBean.userName}"/>
+    	<h:inputText value="#{adminBean.email}"/>
+    	<h:commandButton value="Submit" action="#{adminBean.addUser}" >
+    		<f:ajax execute="@form" update="personTable" render=":personForm" />
+    	</h:commandButton>
+    	
+    	
+    	</h:form>
+    </h:body>
+    
+</html>

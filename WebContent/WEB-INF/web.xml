@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="WebApp_ID" version="3.0">
+  <display-name>lock</display-name>
+  <welcome-file-list>
+    <welcome-file>index.xhtml</welcome-file>
+  </welcome-file-list>
+  
+  <!-- LOGIN SSO -->
+  <login-config>
+    <auth-method>FORM</auth-method>
+  </login-config>
+  
+  <!-- FILTER -->
+  <filter>
+      <filter-name>lock</filter-name>
+      <filter-class>com.tao.lock.security.LockFilter</filter-class>
+  </filter>
+  <filter-mapping>
+      <filter-name>lock</filter-name>
+      <url-pattern>/restricted/*</url-pattern>
+  </filter-mapping>
+  
+  
+  <!-- SECURITY -->
+  <!-- security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Protected Area</web-resource-name>
+      <url-pattern>/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>Everyone</role-name>
+    </auth-constraint>
+  </security-constraint-->
+  
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Admin Page</web-resource-name>
+      <url-pattern>/adminArea.xhtml</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>Admin</role-name>
+    </auth-constraint>
+  </security-constraint>
+  
+  <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Registration Page</web-resource-name>
+      <url-pattern>/registrationArea.xhtml</url-pattern>
+      <url-pattern>/authArea.xhtml</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>Manager</role-name>
+    </auth-constraint>
+  </security-constraint>
+  
+    <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Restricted Area</web-resource-name>
+      <url-pattern>/restricted/*</url-pattern>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>Manager</role-name>
+    </auth-constraint>
+  </security-constraint>
+  
+   <security-constraint>
+    <web-resource-collection>
+      <web-resource-name>Logout</web-resource-name>
+      <url-pattern>/logout.xhtml</url-pattern>
+    </web-resource-collection>
+  </security-constraint>
+    
+  <!-- ROLES -->
+  <security-role>
+    <description>All SAP HANA Cloud users</description>
+    <role-name>Everyone</role-name>
+  </security-role>
+  <security-role>
+    <description>Administrators</description>
+    <role-name>Admin</role-name>
+  </security-role>
+    <security-role>
+    <description>Manager with more access-rights</description>
+    <role-name>Manager</role-name>
+  </security-role>
+  
+  <!-- RESOURCES -->
+  <resource-ref>
+    <res-ref-name>user/Provider</res-ref-name>
+    <res-type>com.sap.security.um.user.UserProvider</res-type>
+  </resource-ref>
+  
+  <!-- SERVLET -->
+  <servlet>
+    <servlet-name>Faces Servlet</servlet-name>
+    <servlet-class>javax.faces.webapp.FacesServlet</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  
+  <!-- MAPPING -->
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>/faces/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>*.jsf</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>*.faces</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>Faces Servlet</servlet-name>
+    <url-pattern>*.xhtml</url-pattern>
+  </servlet-mapping>
+</web-app>

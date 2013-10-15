@@ -1,0 +1,15 @@
+<ui:composition 
+    xmlns="http://www.w3.org/1999/xhtml"
+    xmlns:f="http://java.sun.com/jsf/core"
+    xmlns:h="http://java.sun.com/jsf/html"
+    xmlns:ui="http://java.sun.com/jsf/facelets">
+    
+<title>HanaCloud LOCK</title>
+   
+<script id="sap-ui-bootstrap"
+    src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js"
+    data-sap-ui-theme="sap_goldreflection"
+    data-sap-ui-libs="sap.ui.commons"></script>
+<script src="js/jquery-2.0.3.min.js"></script>
+    
+</ui:composition>

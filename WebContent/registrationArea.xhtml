@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"      
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+ 
+    <h:head>
+		<ui:include src="/include/header.jsf" />
+    </h:head>
+    
+    <h:body class="sapUiBody">
+    	<ui:include src="/include/nav.jsf" />
+    	
+    	
+    	<div id="shellArea"></div>
+    
+    	<h3>RegistrationArea</h3>
+    		
+    		<h:form id="form">
+
+				<div>
+	    			<h:graphicImage value="#{registrationBean.url}" cache="false" id="qrCode"  />
+				</div>
+
+			
+			
+		    	<h:commandButton value="Render QR Code" >
+		    		<f:ajax listener="#{registrationBean.generateRegistrationQRCode}" render="qrCode" />
+		    	</h:commandButton>
+			
+			</h:form>
+
+
+    </h:body>
+    
+</html>
