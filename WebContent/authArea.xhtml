@@ -6,6 +6,39 @@
  
     <h:head>
 		<ui:include src="/include/header.jsf" />
+    
+    	<script>
+    	
+    	$(function() {
+    		
+    		var url = "/lock/api/service/authpolling";
+
+    		var target = "/lock/restricted";
+    		
+       		var redirect = function () {
+       			// redirect to target
+       			window.location.href= target;
+       		};
+       		
+       		var request = function () {
+       			$.ajax({
+   	    			type: "POST",
+   	    			url: url,
+   	    			complete: function (xhr, statusCode) {
+   	    				if(xhr.status == '200') {
+   	    					redirect();
+   	    				} 
+   	    			}
+   	    		});
+                   
+       		};
+       			
+              setInterval(request, 3000);
+        	
+    	});
+    	
+    	</script>
+    
     </h:head>
     
     <h:body class="sapUiBody">

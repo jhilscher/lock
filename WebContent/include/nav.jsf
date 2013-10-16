@@ -6,11 +6,12 @@
     
 <nav>
 
-<a href="index.xhtml">Index</a>
-<a href="adminArea.xhtml">Admin</a>
-<a href="registrationArea.xhtml">Registration</a>
-<a href="authArea.xhtml">Auth me</a>
-<a href="logout.xhtml">LOGOUT</a>
+<a href="/lock/index.xhtml">Index</a>
+<a href="/lock/adminArea.xhtml">Admin</a>
+<a href="/lock/restricted/index.xhtml">Restricted Area</a>
+<a href="/lock/registrationArea.xhtml">Registration</a>
+<a href="/lock/authArea.xhtml">Auth me</a>
+<a href="/lock/logout.xhtml">LOGOUT</a>
 </nav>
     
 </ui:composition>

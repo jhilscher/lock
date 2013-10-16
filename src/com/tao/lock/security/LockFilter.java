@@ -8,14 +8,23 @@ import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+/**
+ * FROM: http://www.oraclejavamagazine-digital.com/javamagazine_open/20130102#pg64
+ * @author Joerg Hilscher
+ * 
+ * This Filter intercepts any request to the path.
+ * It checks the session for the attribute "auth".
+ * If not, then redirects to the index-page.
+ */
+@WebFilter("/restricted/*")
 public class LockFilter implements Filter {
 
-	private FilterConfig config;
-	
+
 	@Override
 	public void destroy() {
 		// TODO Auto-generated method stub
@@ -31,17 +40,16 @@ public class LockFilter implements Filter {
 		
 		HttpSession session = req.getSession();
 		
-		
-		if (session.getAttribute("locked") == null)
-			res.sendRedirect("../index.xhtml");
+		// check
+		if (session.getAttribute("auth") != "true")
+			res.sendRedirect("../unauthorized.xhtml");
 		else
 			chain.doFilter(req, res);
 		
 	}
 
-	@Override
-	public void init(FilterConfig arg0) throws ServletException {
-		config = arg0;	
-	}
+    @Override
+    public void init(FilterConfig filterConfig) {   }
 
 }
+

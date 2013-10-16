@@ -4,6 +4,7 @@ import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 
 import javax.annotation.ManagedBean;
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.servlet.ServletContext;
@@ -32,6 +33,11 @@ import com.tao.lock.services.UserService;
 import com.tao.lock.utils.Roles;
 
 
+	/**
+	 * 
+	 * @author Joerg Hilscher
+	 *
+	 */
 	@ManagedBean
 	@Path("/service")
 	public class WebService {
@@ -61,39 +67,7 @@ import com.tao.lock.utils.Roles;
 		@EJB
 		private AuthentificationHandler authentificationHandler;
 		
-	     
-	    @GET
-	    @Path("/echo/{input}")
-	    @Produces("text/plain")
-	    public String ping(@PathParam("input") String input) { 	
-	        return input;
-	    }
-	    
-	    @GET
-	    @Path("/test")
-	    @Produces("text/plain")
-	    @RolesAllowed(Roles.ADMIN) // <-- is working
-	    public String test() {
-
-			CloudUser user = new CloudUser();
-			user.setUserName("vorname" + " " + "Nachname");
-			user.setEmail("test@ewlnfw.de");
-
-			userService.addUser(user);
-	        return "geht";
-	    }
-	    
-
-	    @GET
-	    @Path("/getall")
-	    @Produces("application/json")
-	    @RolesAllowed(Roles.ADMIN)
-	    public String getAll() {
-	    		    	
-	    	Gson gson = new Gson();
-	        return gson.toJson(userService.getAllUsers());
-	    }
-	    
+   
 	    /**
 	     * Poll on this, to see if a user is authed.
 	     * Warning: this is expensive!
@@ -104,21 +78,22 @@ import com.tao.lock.utils.Roles;
 	    @RolesAllowed(Roles.MANAGER)
 	    public Response authPolling() {
 	    	
-	    	CloudUser user = userService.getCloudUser(request);
-	    	
-	    	if(user != null) {
-	    		if (user.getSession() != null) {
-	    			if (user.getSession().getAttribute("auth") == "true")
+	    	// FIXME: shitty way to do this.
+	    	if (request.getSession().getAttribute("auth") == "true")
 	    				return Response.ok().build();
-	    		}
-	    	}
-	    	
+
 	    	return Response.status(Response.Status.UNAUTHORIZED).build();
 	    }
 	    
+	    /**
+	     * Request coming from mobile.
+	     * @param authJSON
+	     * @return 	StatusCode.
+	     */
 	    @POST
 	    @Path("/auth")
 	    @Consumes(MediaType.APPLICATION_JSON)
+	    @PermitAll 
 	    public Response auth(AuthentificationJSON authJSON) {
 	    	String r1 = authJSON.getX1();
 	    	
@@ -142,7 +117,7 @@ import com.tao.lock.utils.Roles;
     		if (!authed)
     			return Response.status(Response.Status.UNAUTHORIZED).entity("key wrong?").build();	
     		
-    		// TODO: Give User Auth?! But how?
+    		// FIXME: Give User Auth?! But how?
 	    	HttpSession session = user.getSession();
     		if(session == null)
     			return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -150,7 +125,7 @@ import com.tao.lock.utils.Roles;
     		// Add to session
     		user.getSession().setAttribute("auth", "true");
     		
-	    	return Response.ok().build();
+    		return Response.status(Response.Status.CREATED).entity("success").build();
 	    }
 	    
 	    	
@@ -163,6 +138,7 @@ import com.tao.lock.utils.Roles;
 	    @POST
 	    @Path("/register")
 	    @Consumes(MediaType.APPLICATION_JSON)
+	    @PermitAll 
 	    public Response register(RegistrationJSON registrationJSON) {
 	    	
 	    	String clientIdKey = registrationJSON.getClientIdKey();	

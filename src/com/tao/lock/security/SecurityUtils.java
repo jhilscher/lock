@@ -146,10 +146,11 @@ public class SecurityUtils {
     }
 
     /**
-     * 
+     * XORes two byte arrays.
+     * Length of the xored array is the length of the shorter array.
      * @param a
      * @param b
-     * @return
+     * @return XORed byte array of a and b.
      */
     public static byte[] xor(byte[] a, byte[] b)
     {

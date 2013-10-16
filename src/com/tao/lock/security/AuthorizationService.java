@@ -1,6 +1,5 @@
 package com.tao.lock.security;
 
-import javax.annotation.Resource;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.naming.NamingException;
@@ -13,7 +12,6 @@ import com.sap.security.um.service.UserManagementAccessor;
 import com.sap.security.um.user.PersistenceException;
 import com.sap.security.um.user.User;
 import com.sap.security.um.user.UserProvider;
-import com.tao.lock.entities.CloudUser;
 
 
 

@@ -10,6 +10,6 @@
     src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js"
     data-sap-ui-theme="sap_goldreflection"
     data-sap-ui-libs="sap.ui.commons"></script>
-<script src="js/jquery-2.0.3.min.js"></script>
+<script src="include/js/jquery-2.0.3.min.js"></script>
     
 </ui:composition>

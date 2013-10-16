@@ -1,27 +1,25 @@
 package com.tao.lock.common;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.security.NoSuchAlgorithmException;
-import java.security.Principal;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
-import java.util.Set;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.faces.bean.SessionScoped;
 import javax.faces.context.FacesContext;
 import javax.inject.Named;
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.tao.lock.entities.ClientIdentifier;
 import com.tao.lock.entities.CloudUser;
 import com.tao.lock.qrservice.QRUtils;
 import com.tao.lock.security.AuthentificationHandler;
-import com.tao.lock.security.RegistrationHandler;
 import com.tao.lock.security.SecurityUtils;
 import com.tao.lock.services.UserService;
 
@@ -57,36 +55,43 @@ public class AuthBean implements Serializable {
 		generateAuthQRCode();
 	}
 	
-@SuppressWarnings("static-access")
-public String generateAuthQRCode() {
-		
-		
+	@SuppressWarnings("static-access")
+	public String generateAuthQRCode() {
+			
 		HttpServletRequest request = (HttpServletRequest)FacesContext.getCurrentInstance().getExternalContext().getRequest();
+		HttpServletResponse response = (HttpServletResponse)FacesContext.getCurrentInstance().getExternalContext().getResponse();
+		
 		
 		QRUtils qrUtils = new QRUtils();
-		
-		
-		
+
 		try {
 
 			// get the current user
 			CloudUser cloudUser = userService.getCloudUser(request);
 			
 			// check, if the user is there
-			if (cloudUser == null || cloudUser.getIdentifier().getHashedClientId() == null
-					|| cloudUser.getIdentifier().getSecret() == null) {
+			if (cloudUser == null) {
 				errorMsg = "Unknown User!";
 				return "false";
 			}
 			
-			// FIXME: this is experimental
-			// Principal principal = request.login(arg0, arg1);	
 
+			if (cloudUser.getIdentifier() == null || cloudUser.getIdentifier().getSecret() == null)	{
+				errorMsg = "User not registered!";
+				return "false";
+			}
+			
 			
 			// if authed
 			if((String)request.getSession(false).getAttribute("auth") == "true") {
-				url = "http://www.wandtattoos.org/images/wandtattoo-katze.jpg";
-				return "true";
+				try {
+					// redirect to restricted area
+					response.sendRedirect("/lock/restricted");
+				} catch (IOException e) {
+
+				}
+				
+				return "false";
 			}
 			
 			cloudUser.setSession(request.getSession(false));
@@ -110,10 +115,10 @@ public String generateAuthQRCode() {
 			// send to authHandler
 			authentificationHandler.addToWaitList(cloudUser, token, qrUtils);
 
-			// TODO: remove laten
-			errorMsg = "Token: " + token;
-			errorMsg += "<br> Re Xored: " + SecurityUtils.toHex(SecurityUtils.xor(alpha, x_1));
-			errorMsg += " --";
+			// FIXME: remove 
+			// errorMsg = "Token: " + token;
+			// errorMsg += "<br> Re Xored: " + SecurityUtils.toHex(SecurityUtils.xor(alpha, x_1));
+			// errorMsg += " --";
 			
 		} catch (NoSuchAlgorithmException e) {
 			LOGGER.error("Could not find algorithm", e.getMessage());
