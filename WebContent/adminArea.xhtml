@@ -6,12 +6,96 @@
  
     <h:head>
 		<ui:include src="/include/header.jsf" />
+		
+		<script>
+		
+		
+		$(function () {
+			
+			var url = "/lock/api/service/getallusers";
+			
+			var json;
+			
+			$.ajax({
+   	    			type: "GET",
+   	    			url: url,
+   	    			success: function (data) {
+   	    				 json = data;
+   	    				
+	   	    			 oModel2.setData({modelData: json});
+	   			         oTable2.setModel(oModel2);
+	   			         oTable2.bindRows("/modelData");
+	
+	   			         //Initially sort the table
+	   			         oTable2.sort(oTable2.getColumns()[0]);
+	
+	   			         //Bring the table onto the UI 
+	   			         oTable2.placeAt("content");
+   	    				
+   	    			}
+	   	    	});
+				
+			});
+		
+
+
+		         //Create an instance of the table control
+		         var oTable2 = new sap.ui.table.Table({
+		         	title: "User Management",
+		         	visibleRowCount: 7,
+		         	firstVisibleRow: 3,
+		         	selectionMode: sap.ui.table.SelectionMode.Single,
+		         	navigationMode: sap.ui.table.NavigationMode.Paginator
+		         });
+
+		         //Define the columns and the control templates to be used
+		         oTable2.addColumn(new sap.ui.table.Column({
+		         	label: new sap.ui.commons.Label({text: "UserName"}),
+		         	template: new sap.ui.commons.TextView().bindProperty("text", "userName"),
+		         	sortProperty: "userName",
+		         	filterProperty: "userName",
+		         	width: "200px"
+		         }));
+
+		         oTable2.addColumn(new sap.ui.table.Column({
+		         	label: new sap.ui.commons.Label({text: "eMail"}),
+		         	template: new sap.ui.commons.TextView().bindProperty("text", "email"),
+		         	sortProperty: "email",
+		         	filterProperty: "email",
+		         	width: "200px"
+		         }));
+		         
+		         oTable2.addColumn(new sap.ui.table.Column({
+		         	label: new sap.ui.commons.Label({text: "Registed"}),
+		         	template: new sap.ui.commons.TextView().bindProperty("text", "createdAt"),
+		         	sortProperty: "createdAt",
+		         	filterProperty: "createdAt",
+		         	width: "100px",
+		         	hAlign: "Center"
+		         }));
+		         
+		         oTable2.addColumn(new sap.ui.table.Column({
+		         	label: new sap.ui.commons.Label({text: "Remove Mobile"}),
+		         	template: new sap.ui.commons.Button({
+		                text : "remove",
+		                tooltip : "Remove the mobile client from this user.",
+		                press : function() {alert('Alert from ');}
+		        	}),
+		         	width: "60px"
+		         }));
+		         
+		         //Create a model and bind the table rows to this model
+		         var oModel2 = new sap.ui.model.json.JSONModel();
+		        
+		
+		</script>
+		
     </h:head>
     
-    <h:body class="sapUiBody">
+    <h:body class="sapUiBody" role="application">
     	<ui:include src="/include/nav.jsf" />
     	
-    	<div id="shellArea"></div>
+    	<div id="content"></div>
     
     	<h3>AdminArea</h3>
     	
@@ -32,27 +116,21 @@
 			</h:column>
 			<h:column>
 				<f:facet name="header">last login:</f:facet>
-				#{person.lastLogin}
+				#{person.createdAt}
 			</h:column>
 			<h:column>
 				<f:facet name="header">mobile id:</f:facet>
 				#{person.identifier.secret}
 			</h:column>
 			<h:column>
-				<f:facet name="header">hash:</f:facet>
-				#{person.identifier.hashedClientId}
-			</h:column>
-			<h:column>
-				<f:facet name="header">salt:</f:facet>
-				#{person.identifier.salt}
-			</h:column>
-			<h:column>
-				<f:facet name="header">secret:</f:facet>
-				#{person.identifier.secret}
-			</h:column>
-			<h:column>
 				<f:facet name="header">Date:</f:facet>
 				#{person.identifier.created}
+			</h:column>
+			<h:column>
+				<f:facet name="header">REMOVE IDENTIFIER</f:facet>
+				<h:commandButton value="Remove Identifier" action="#{adminBean.removeId(person.id)}" >
+		    		<f:ajax execute="@form" update="personTable" render=":personForm" />
+		    	</h:commandButton>
 			</h:column>
 		</h:dataTable>
     	

@@ -22,12 +22,8 @@ public class AdminBean implements Serializable {
  
 	private static final Logger LOGGER = LoggerFactory.getLogger(AdminBean.class);
 
-
 	@EJB
 	UserService userService;
-	
-//	@Resource
-//	private UserProvider userProvider;
 	
 	/**
 	 * Members for displaying in jfs.
@@ -75,6 +71,14 @@ public class AdminBean implements Serializable {
 		
 		LOGGER.info("Could not add user. username or email null or empty.");
 		return "false";
+	}
+	
+	public String removeId(String arg) {
+		long id = Long.parseLong(arg);
+		
+		userService.removeIdentifierFromUser(id);
+		
+		return "true";
 	}
 	
 	public void listAllUsers() {

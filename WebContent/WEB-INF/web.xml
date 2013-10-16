@@ -37,25 +37,35 @@
 
   <!-- FILTER -->
   <filter>
-      <filter-name>lock</filter-name>
-      <filter-class>com.tao.lock.security.LockFilter</filter-class>
+      <filter-name>restricted</filter-name>
+      <filter-class>com.tao.lock.security.RestrictedFilter</filter-class>
   </filter>
   <filter-mapping>
-      <filter-name>lock</filter-name>
+      <filter-name>restricted</filter-name>
       <url-pattern>/restricted/*</url-pattern>
   </filter-mapping>
   
+  <filter>
+      <filter-name>general</filter-name>
+      <filter-class>com.tao.lock.security.GeneralFilter</filter-class>
+  </filter>
+  <filter-mapping>
+      <filter-name>general</filter-name>
+      <url-pattern>/general/*</url-pattern>
+  </filter-mapping>
+  
+  
   
   <!-- SECURITY -->
-  <!-- security-constraint>
+  <security-constraint>
     <web-resource-collection>
       <web-resource-name>Protected Area</web-resource-name>
-      <url-pattern>/*</url-pattern>
+      <url-pattern>/general/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>Everyone</role-name>
     </auth-constraint>
-  </security-constraint-->
+  </security-constraint>
   
   <security-constraint>
     <web-resource-collection>

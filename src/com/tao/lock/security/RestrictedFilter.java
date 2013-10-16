@@ -22,7 +22,7 @@ import javax.servlet.http.HttpSession;
  * If not, then redirects to the index-page.
  */
 @WebFilter("/restricted/*")
-public class LockFilter implements Filter {
+public class RestrictedFilter implements Filter {
 
 
 	@Override

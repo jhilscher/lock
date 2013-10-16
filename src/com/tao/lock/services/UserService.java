@@ -56,6 +56,27 @@ public class UserService {
 		return userDao.addUser(user);
 	}
 	
+	/**
+	 * Remove the identifier from the user.
+	 * @param user
+	 * @return	updated User.
+	 */
+	public CloudUser removeIdentifierFromUser(CloudUser user) {
+		user.setIdentifier(null);
+		return userDao.updateUser(user);
+	}
+	
+	/**
+	 * Remove the identifier from the user.
+	 * @param id
+	 * @return	updated User.
+	 */
+	public CloudUser removeIdentifierFromUser(long id) {
+		CloudUser user = userDao.getUserById(id);
+		user.setIdentifier(null);
+		return userDao.updateUser(user);
+	}
+	
 	public CloudUser update(CloudUser user) {
 		return userDao.updateUser(user);
 	}

@@ -179,7 +179,23 @@ import com.tao.lock.utils.Roles;
 	    	return Response.status(Response.Status.CREATED).entity("success").build();
 	    }
 	    
+	    /**
+	     * Open Services
+	     */
    
+	    @GET
+	    @Path("/getallusers")
+	    @Produces("application/json")
+	    @RolesAllowed(Roles.ADMIN)
+	    public String getAllUsers() {
+	    	Gson gson = new Gson();
+	    	return gson.toJson(userService.getAllUsers());
+	    	
+	    }
+	    
+	    
+	    
+	    
 	}
 
 

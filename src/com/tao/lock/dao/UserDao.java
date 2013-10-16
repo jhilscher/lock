@@ -35,6 +35,18 @@ public class UserDao extends Dao {
         }
     }
     
+    public CloudUser getUserById(long id) {
+        try {
+            return (CloudUser) em.createNamedQuery(CloudUser.QUERY_BYUSERID)
+                    .setParameter("id", id).getSingleResult();
+        } catch (NoResultException e) {
+            return null;
+        } catch (NonUniqueResultException e) {
+            LOGGER.error("More than one result! Fatal Error and possibly a security leak!", e);
+            throw e;
+        }
+    }
+    
 	@SuppressWarnings("unchecked")
 	public List<CloudUser> getAllUsers() {
 		return em.createNamedQuery(CloudUser.QUERY_BYALLUSERS).getResultList();

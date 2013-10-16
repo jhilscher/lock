@@ -10,6 +10,12 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.sap.security.auth.login.LoginContextFactory;
 
+/**
+ * Bean to simply log a user out.
+ * Logs the user out from SSO and Lock.
+ * @author Joerg Hilscher
+ *
+ */
 @Named
 @SessionScoped
 public class LogoutBean {
