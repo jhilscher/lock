@@ -2,12 +2,15 @@ package com.tao.lock.dao;
 
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 
+import com.tao.lock.entities.ClientIdentifier;
 import com.tao.lock.entities.CloudUser;
+import com.tao.lock.utils.Roles;
 
 /**
  * DAO for managing CloudUsers.
@@ -47,11 +50,13 @@ public class UserDao extends Dao {
         }
     }
     
+    @RolesAllowed(Roles.ADMIN)
 	@SuppressWarnings("unchecked")
 	public List<CloudUser> getAllUsers() {
 		return em.createNamedQuery(CloudUser.QUERY_BYALLUSERS).getResultList();
 	}
 
+	@RolesAllowed(Roles.EVERYONE)
 	public CloudUser addUser(CloudUser user) {
 		return create(user);
 	}
@@ -59,4 +64,14 @@ public class UserDao extends Dao {
 	public CloudUser updateUser(CloudUser user) {
 		return update(user);
 	}
+	
+	@RolesAllowed(Roles.ADMIN)
+	public void deleteClientIdFromUser (CloudUser user) {
+		ClientIdentifier id = user.getIdentifier();
+		if (id != null) {
+			user.setIdentifier(null);
+			remove(id);
+		}
+	}
+	
 }

@@ -2,6 +2,8 @@ package com.tao.lock.services;
 
 import java.util.List;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
@@ -17,6 +19,7 @@ import com.sap.security.um.user.User;
 import com.tao.lock.dao.UserDao;
 import com.tao.lock.entities.CloudUser;
 import com.tao.lock.security.AuthorizationService;
+import com.tao.lock.utils.Roles;
 
 /**
  * 
@@ -39,6 +42,7 @@ public class UserService {
 	 * GetAllUsers.
 	 * @return list of all cloud-users.
 	 */
+	@RolesAllowed(Roles.ADMIN)
 	public List<CloudUser> getAllUsers() {
 		return userDao.getAllUsers();
 	}
@@ -51,7 +55,11 @@ public class UserService {
 	 * Adds a User.
 	 * @param user	User to be added.
 	 */
+	@RolesAllowed(Roles.EVERYONE)
 	public CloudUser addUser(CloudUser user) {
+		
+		if (user == null)
+			return null;
 		
 		return userDao.addUser(user);
 	}
@@ -61,9 +69,12 @@ public class UserService {
 	 * @param user
 	 * @return	updated User.
 	 */
+	@RolesAllowed(Roles.ADMIN)
 	public CloudUser removeIdentifierFromUser(CloudUser user) {
-		user.setIdentifier(null);
-		return userDao.updateUser(user);
+		if (user != null)
+			userDao.deleteClientIdFromUser(user);
+		
+		return user;
 	}
 	
 	/**
@@ -71,13 +82,23 @@ public class UserService {
 	 * @param id
 	 * @return	updated User.
 	 */
+	@RolesAllowed(Roles.ADMIN)
 	public CloudUser removeIdentifierFromUser(long id) {
 		CloudUser user = userDao.getUserById(id);
-		user.setIdentifier(null);
-		return userDao.updateUser(user);
+		
+		if (user != null)	
+			userDao.deleteClientIdFromUser(user);
+		
+		return user;
 	}
 	
+	// WebService#register needs this -> PermitAll
+	@PermitAll
 	public CloudUser update(CloudUser user) {
+		
+		if (user == null)
+			return null;
+		
 		return userDao.updateUser(user);
 	}
 	
@@ -88,6 +109,9 @@ public class UserService {
 	 * @return CloudUser or Null if there is no user from SSO.
 	 */
 	public CloudUser getCloudUser(HttpServletRequest request) {
+		
+		if (request == null)
+			return null;
 		
 		User ssoUser = null;
 		

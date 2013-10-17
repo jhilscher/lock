@@ -4,14 +4,18 @@
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets">
     
-<nav>
-
+<!-- nav>
 <a href="/lock/index.xhtml">Index</a>
 <a href="/lock/adminArea.xhtml">Admin</a>
 <a href="/lock/restricted/index.xhtml">Restricted Area</a>
 <a href="/lock/registrationArea.xhtml">Registration</a>
 <a href="/lock/authArea.xhtml">Auth me</a>
 <a href="/lock/logout.xhtml">LOGOUT</a>
-</nav>
+</nav-->
+
+    	<header id="navBar"></header>
+    	
+    	<div id="content"></div>
+
     
 </ui:composition>

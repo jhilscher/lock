@@ -12,8 +12,14 @@ public class AuthentificationJSON {
 
 	private String x1;
 	private String clientIdKey;
-	
+	private String timeStamp;
 
+	public String getTimeStamp() {
+		return timeStamp;
+	}
+	public void setTimeStamp(String timeStamp) {
+		this.timeStamp = timeStamp;
+	}
 	public String getClientIdKey() {
 		return clientIdKey;
 	}

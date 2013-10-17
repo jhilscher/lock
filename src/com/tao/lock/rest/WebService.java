@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -117,7 +118,7 @@ import com.tao.lock.utils.Roles;
     		if (!authed)
     			return Response.status(Response.Status.UNAUTHORIZED).entity("key wrong?").build();	
     		
-    		// FIXME: Give User Auth?! But how?
+    		// FIXME: Give User Auth?! 
 	    	HttpSession session = user.getSession();
     		if(session == null)
     			return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -182,17 +183,27 @@ import com.tao.lock.utils.Roles;
 	    /**
 	     * Open Services
 	     */
-   
 	    @GET
 	    @Path("/getallusers")
-	    @Produces("application/json")
+	    @Produces(MediaType.APPLICATION_JSON)
 	    @RolesAllowed(Roles.ADMIN)
 	    public String getAllUsers() {
 	    	Gson gson = new Gson();
 	    	return gson.toJson(userService.getAllUsers());
-	    	
 	    }
 	    
+	    @POST
+	    @Path("/removeclientidfromuser")
+	    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	    @RolesAllowed(Roles.ADMIN)
+	    public Response removeClientIdFromUser(@FormParam("id") long id) {
+	    	CloudUser user = userService.removeIdentifierFromUser(id);
+	    	
+	    	return (user == null) ? 
+	    			Response.status(Response.Status.NO_CONTENT).entity("user not found").build() :
+	    				Response.status(Response.Status.CREATED).entity("success").build();
+	    	
+	    }
 	    
 	    
 	    

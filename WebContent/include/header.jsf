@@ -11,6 +11,6 @@
     data-sap-ui-theme="sap_goldreflection"
     data-sap-ui-libs="sap.ui.commons,sap.ui.table,sap.ui.ux3"
     ></script>
-<!-- script src="include/js/jquery-2.0.3.min.js"></script-->
+<script src="include/js/general.js"></script>
     
 </ui:composition>

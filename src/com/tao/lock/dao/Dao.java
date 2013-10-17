@@ -30,4 +30,9 @@ public class Dao implements Serializable{
         T merge = em.merge(t);
         return merge;
     }
+    
+    public <T> void remove(T t) {
+        em.remove(t);
+        em.flush();
+    }
 }
