@@ -86,6 +86,18 @@ import com.tao.lock.utils.Roles;
 	    	return Response.status(Response.Status.UNAUTHORIZED).build();
 	    }
 	    
+	    @POST
+	    @Path("/regpolling")
+	    @RolesAllowed(Roles.MANAGER)
+	    public Response regPolling() {
+	    	
+	    	if (userService.getCloudUser(request).getIdentifier() != null)
+	    				return Response.ok().build();
+
+	    	return Response.status(Response.Status.UNAUTHORIZED).build();
+	    }
+	    
+	    
 	    /**
 	     * Request coming from mobile.
 	     * @param authJSON

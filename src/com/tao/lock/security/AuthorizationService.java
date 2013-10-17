@@ -17,8 +17,9 @@ import com.sap.security.um.user.UserProvider;
 
 
 /**
- * TODO: Use this to authorize users
- * @author D059130
+ * 
+ * @author Joerg Hilscher
+ * Service for authorizing the SSO-User. 	
  *
  */
 @Stateless

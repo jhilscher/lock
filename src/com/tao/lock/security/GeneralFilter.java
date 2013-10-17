@@ -46,7 +46,6 @@ public class GeneralFilter implements Filter {
 		HttpServletResponse res = (HttpServletResponse) response;
 		
 		CloudUser cloudUser = userService.getCloudUser(req);
-		req.setAttribute("user", cloudUser);
 		
 		chain.doFilter(req, res);
 		

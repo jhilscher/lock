@@ -4,6 +4,8 @@
     xmlns:h="http://java.sun.com/jsf/html"
     xmlns:ui="http://java.sun.com/jsf/facelets">
     
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    
 <title>HanaCloud LOCK</title>
    
 <script id="sap-ui-bootstrap"
@@ -11,6 +13,7 @@
     data-sap-ui-theme="sap_goldreflection"
     data-sap-ui-libs="sap.ui.commons,sap.ui.table,sap.ui.ux3"
     ></script>
-<script src="include/js/general.js"></script>
+    
+<script src="ui5/general.js"></script>
     
 </ui:composition>

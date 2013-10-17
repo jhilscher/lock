@@ -6,13 +6,24 @@
  
     <h:head>
 		<ui:include src="/include/header.jsf" />
+		
+		<script>
+		
+			sap.ui.localResources("ui5");
+	        var view = sap.ui.view({id:"view_start_1", viewName:"ui5.Start", 
+	                                type:sap.ui.core.mvc.ViewType.JS});
+	        
+	        
+	        view.placeAt("content");
+		
+		</script>
+		
     </h:head>
     
     <h:body class="sapUiBody"  role="application">
     	<ui:include src="/include/nav.jsf" />
     	
     
-    	<h3>Willkommen</h3>
     	<h:form>
 
 			<div>

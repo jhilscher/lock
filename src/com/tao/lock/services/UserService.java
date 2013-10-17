@@ -10,6 +10,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.naming.NamingException;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,10 +109,17 @@ public class UserService {
 	 * @param request
 	 * @return CloudUser or Null if there is no user from SSO.
 	 */
+	@RolesAllowed(Roles.EVERYONE)
 	public CloudUser getCloudUser(HttpServletRequest request) {
 		
 		if (request == null)
 			return null;
+		
+		HttpSession session = request.getSession();
+		
+		// if user is stored in the session, return this
+		//if (session.getAttribute("c_user") != null && session.getAttribute("c_user") instanceof CloudUser)
+		//	return (CloudUser) session.getAttribute("c_user");
 		
 		User ssoUser = null;
 		
@@ -127,8 +135,10 @@ public class UserService {
 		// try finding the coresponding local user
 		CloudUser cloudUser = getUserByName(ssoUser.getName());
 		
-		if (cloudUser != null)
+		if (cloudUser != null) {
+			//session.setAttribute("c_user", cloudUser);
 			return cloudUser;
+		}
 		
 		cloudUser = new CloudUser();
 		cloudUser.setUserName(ssoUser.getName());

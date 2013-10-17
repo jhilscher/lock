@@ -6,15 +6,57 @@
  
     <h:head>
 		<ui:include src="/include/header.jsf" />
+		
+		<script>
+		
+		$(function() {
+    		
+    		var url = "/lock/api/service/regpolling";
+
+    		var target = "/lock/authArea.xhtml";
+    		
+       		var isRegisterd = function () {
+       			
+       			oLabel.setText("Lock Client successfully registered");
+       			
+       		};
+       		
+       		var request = function () {
+       			$.ajax({
+   	    			type: "POST",
+   	    			url: url,
+   	    			complete: function (xhr, statusCode) {
+   	    				if(xhr.status == '200') {
+   	    					isRegisterd();
+   	    				} else {
+   	    					oLabel.setText("Lock Client not registered");
+   	    				}
+   	    			}
+   	    		});
+                   
+       		};
+       			
+              setInterval(request, 3000);
+        	
+    	});
+		
+        var oLabel = new sap.ui.commons.Label("labelForInfoRegistered");
+        oLabel.setDesign(sap.ui.commons.LabelDesign.H2);
+        
+        oLabel.placeAt("content");
+		
+		
+		</script>
+		
     </h:head>
     
     <h:body class="sapUiBody"  role="application">
     	<ui:include src="/include/nav.jsf" />
     	
+    	<header id="navBar"></header>
     	
-    	<div id="shellArea"></div>
+    	<div id="content"></div>
     
-    	<h3>RegistrationArea</h3>
     		
     		<h:form id="form">
 
