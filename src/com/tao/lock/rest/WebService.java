@@ -26,10 +26,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.tao.lock.entities.CloudUser;
+import com.tao.lock.rest.json.AuthentificationJSON;
+import com.tao.lock.rest.json.RegistrationJSON;
 import com.tao.lock.security.AuthentificationHandler;
 import com.tao.lock.security.RegistrationHandler;
 import com.tao.lock.security.SecurityUtils;
+import com.tao.lock.services.AuthentificationService;
 import com.tao.lock.services.UserService;
 import com.tao.lock.utils.Roles;
 
@@ -68,7 +72,17 @@ import com.tao.lock.utils.Roles;
 		@EJB
 		private AuthentificationHandler authentificationHandler;
 		
+		@EJB
+		private AuthentificationService authentificationService;
    
+		/**
+		 * This builder will only include fields with @Expose annotation.
+		 * @return Gson
+		 */
+		public Gson getGson () {
+			return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
+		}
+		
 	    /**
 	     * Poll on this, to see if a user is authed.
 	     * Warning: this is expensive!
@@ -86,6 +100,10 @@ import com.tao.lock.utils.Roles;
 	    	return Response.status(Response.Status.UNAUTHORIZED).build();
 	    }
 	    
+	    /**
+	     * 
+	     * @return
+	     */
 	    @POST
 	    @Path("/regpolling")
 	    @RolesAllowed(Roles.MANAGER)
@@ -94,9 +112,12 @@ import com.tao.lock.utils.Roles;
 	    	if (userService.getCloudUser(request).getIdentifier() != null)
 	    				return Response.ok().build();
 
-	    	return Response.status(Response.Status.UNAUTHORIZED).build();
+	    	return Response.status(Response.Status.NO_CONTENT).build();
 	    }
 	    
+	    /**
+	     * **** REQUESTS FROM MOBILE CLIENT ****
+	     */
 	    
 	    /**
 	     * Request coming from mobile.
@@ -193,15 +214,14 @@ import com.tao.lock.utils.Roles;
 	    }
 	    
 	    /**
-	     * Open Services
+	     * **** SERVICES FOR WEB-CLIENT ****
 	     */
 	    @GET
 	    @Path("/getallusers")
 	    @Produces(MediaType.APPLICATION_JSON)
 	    @RolesAllowed(Roles.ADMIN)
 	    public String getAllUsers() {
-	    	Gson gson = new Gson();
-	    	return gson.toJson(userService.getAllUsers());
+	    	return getGson().toJson(userService.getAllUsers());
 	    }
 	    
 	    @POST
@@ -217,8 +237,47 @@ import com.tao.lock.utils.Roles;
 	    	
 	    }
 	    
+	    @GET
+	    @Path("/getcurrentuser")
+	    @RolesAllowed(Roles.EVERYONE)
+	    @Produces(MediaType.APPLICATION_JSON)
+	    public String getCurrentUser() {
+	    	return getGson().toJson(userService.getCloudUser(request));
+	    }
 	    
+	    @GET
+	    @Path("/getregisterqr")
+	    @RolesAllowed(Roles.MANAGER)
+	    public Response getRegisterQr() {
+	    	
+	    	CloudUser user = userService.getCloudUser(request);
+	    	if (user == null)
+	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
+	    	
+	    	String url = authentificationService.registerUser(request, context, user);
+	    	if (url == null)
+	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
+	    	
+	    	return Response.ok().entity(url).build();
+	    	
+	    }
 	    
+	    @GET
+	    @Path("/getauthqr")
+	    @RolesAllowed(Roles.MANAGER)
+	    public Response getAuthQr() {
+	    	
+	    	CloudUser user = userService.getCloudUser(request);
+	    	if (user == null)
+	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
+	    	
+	    	String url = authentificationService.authentificateUser(request, context, user);
+	    	if (url == null)
+	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
+	    	
+	    	return Response.ok().entity(url).build();
+	    	
+	    }
 	}
 
 

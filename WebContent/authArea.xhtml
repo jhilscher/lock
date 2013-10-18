@@ -27,7 +27,9 @@
    	    			complete: function (xhr, statusCode) {
    	    				if(xhr.status == '200') {
    	    					redirect();
-   	    				} 
+   	    				} else {
+   	    					authLabel.setText("Not logged in!");
+   	    				}
    	    			}
    	    		});
                    
@@ -36,6 +38,11 @@
               setInterval(request, 3000);
         	
     	});
+    	
+        var authLabel = new sap.ui.commons.Label("labelForInfoRegistered");
+        authLabel.setDesign(sap.ui.commons.LabelDesign.bold);
+        
+        authLabel.placeAt("content");
     	
     	</script>
     

@@ -32,14 +32,12 @@ public class ClientIdentifier {
      * x1.
      * Must be store in plain text.
      */
-    @Expose // from gson
     @Column
     private String secret;
     
     /**
      * random salt.
      */
-    @Expose // from gson
     @Column
     private String salt;
     
@@ -47,14 +45,15 @@ public class ClientIdentifier {
      * hashed and salted client id.
      * No need to store this in plain text.
      */
-    @Expose // from gson
     @Column
     private String hashedClientId;
 
+    @Expose
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
 
+    @Expose
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date loginAttempt;

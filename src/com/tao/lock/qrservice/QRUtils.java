@@ -45,6 +45,8 @@ public class QRUtils {
 	
 	private String filePath;
 	
+	private ServletContext context;
+	
 	/**
 	 * pixel values for the size of the image.
 	 */
@@ -108,8 +110,15 @@ public class QRUtils {
 					}
 		        }
 		        
-		        FacesContext context = FacesContext.getCurrentInstance();
-				ServletContext servletContext = (ServletContext)context.getExternalContext().getContext();
+		        ServletContext servletContext;
+		        
+		        if (this.context == null) {
+		        	FacesContext facesContext = FacesContext.getCurrentInstance();
+		        	servletContext = (ServletContext)facesContext.getExternalContext().getContext();
+		        } else {
+		        	servletContext = context;
+		        }
+		        
 				String path = servletContext.getRealPath(DESC + filePath);
 				
 				LOGGER.info("PATH: " + path);
@@ -164,6 +173,16 @@ public class QRUtils {
 
 	public void setFilePath(String filePath) {
 		this.filePath = filePath;
+	}
+
+
+	public ServletContext getContext() {
+		return context;
+	}
+
+
+	public void setContext(ServletContext context) {
+		this.context = context;
 	}
 	
 }

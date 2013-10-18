@@ -55,12 +55,11 @@
   </filter-mapping>
   
   
-  
   <!-- SECURITY -->
   <security-constraint>
     <web-resource-collection>
       <web-resource-name>Protected Area</web-resource-name>
-      <url-pattern>/general/*</url-pattern>
+      <url-pattern>/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>Everyone</role-name>
@@ -105,6 +104,13 @@
     </web-resource-collection>
   </security-constraint>
     
+  <security-constraint>
+  <web-resource-collection>
+    <web-resource-name>Webservice</web-resource-name>
+    <url-pattern>/api/*</url-pattern>
+  </web-resource-collection>
+</security-constraint>
+   
   <!-- ROLES -->
   <security-role>
     <description>All SAP HANA Cloud users</description>

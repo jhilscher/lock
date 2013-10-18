@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml"
+<html lang="en"
+	  xmlns="http://www.w3.org/1999/xhtml"
       xmlns:f="http://java.sun.com/jsf/core"      
       xmlns:h="http://java.sun.com/jsf/html"
       xmlns:ui="http://java.sun.com/jsf/facelets">
@@ -9,36 +10,21 @@
 		
 		<script>
 		
+			loadUserData();
+			
 			sap.ui.localResources("ui5");
-	        var view = sap.ui.view({id:"view_start_1", viewName:"ui5.Start", 
-	                                type:sap.ui.core.mvc.ViewType.JS});
+			shell.placeAt("shellArea");
+			setShellContent("start");
+			
 	        
-	        
-	        view.placeAt("content");
-		
+			
 		</script>
 		
     </h:head>
     
     <h:body class="sapUiBody"  role="application">
-    	<ui:include src="/include/nav.jsf" />
-    	
-    
-    	<h:form>
 
-			<div>
-    			<h:graphicImage value="#{indexBean.qrCodePath}" cache="false" id="qrCode"  />
-			</div>
-			
-    	   	<h:inputText id="enterName" value="#{indexBean.qrText}"/>
-           	
-           	<br />
-           	
-           	<h:commandButton value="Generate Code" action="#{indexBean.renderQR}">
-           		<f:ajax execute="@form" update="qrCode" render="qrCode" />
-           	</h:commandButton>
-           	
-    	</h:form>
+		<div id="shellArea"></div>
     
     </h:body>
     

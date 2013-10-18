@@ -34,7 +34,7 @@ public class GeneralFilter implements Filter {
 
 	@Override
 	public void destroy() {
-		// TODO Auto-generated method stub
+
 		
 	}
 
@@ -45,6 +45,7 @@ public class GeneralFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 		
+		// FIXME
 		CloudUser cloudUser = userService.getCloudUser(req);
 		
 		chain.doFilter(req, res);

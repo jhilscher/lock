@@ -21,6 +21,8 @@ import javax.validation.constraints.Size;
 
 import org.eclipse.persistence.annotations.Index;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * 
  * @author Joerg Hilscher
@@ -44,24 +46,29 @@ public class CloudUser {
 	public static final String QUERY_BYUSERNAMEWITHIDENTIFIER = "getUserByUserNameWithIdentifier";
 	public static final String QUERY_BYUSERID = "getUserById";
 	
+	@Expose
     @Id
     @GeneratedValue
     private Long id;
     
+	@Expose
     @Column(unique = true, nullable = false)
     @Index
     @Size(min = 4, max = 256)
     private String userName;
     
+	@Expose
     @Column(unique = true, nullable = false)
     @Index
     @Size(min = 4, max = 256)
     private String email;
     
+	@Expose
     @Column()
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     
+	@Expose
     @OneToOne(fetch=FetchType.EAGER)
     @JoinColumn(name="identifierId")
     private ClientIdentifier identifier;

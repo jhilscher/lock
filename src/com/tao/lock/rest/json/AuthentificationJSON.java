@@ -1,4 +1,4 @@
-package com.tao.lock.rest;
+package com.tao.lock.rest.json;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
@@ -8,16 +8,17 @@ import javax.xml.bind.annotation.XmlRootElement;
  *
  */
 @XmlRootElement
-public class RegistrationJSON {
+public class AuthentificationJSON {
 
 	private String x1;
 	private String clientIdKey;
-	
-	public String getX1() {
-		return x1;
+	private String timeStamp;
+
+	public String getTimeStamp() {
+		return timeStamp;
 	}
-	public void setX1(String x_1) {
-		this.x1 = x_1;
+	public void setTimeStamp(String timeStamp) {
+		this.timeStamp = timeStamp;
 	}
 	public String getClientIdKey() {
 		return clientIdKey;
@@ -25,5 +26,13 @@ public class RegistrationJSON {
 	public void setClientIdKey(String clientIdKey) {
 		this.clientIdKey = clientIdKey;
 	}
+	public String getX1() {
+		return x1;
+	}
+	public void setX1(String x1) {
+		this.x1 = x1;
+	}
 	
+	
+
 }
