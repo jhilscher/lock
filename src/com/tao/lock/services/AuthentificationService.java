@@ -1,6 +1,5 @@
 package com.tao.lock.services;
 
-import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
@@ -8,10 +7,8 @@ import java.util.Date;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.faces.context.FacesContext;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +37,8 @@ public class AuthentificationService {
 	
 	@EJB
 	private AuthentificationHandler authentificationHandler;
+	
+
 	
 	/**
 	 * 
@@ -133,12 +132,8 @@ public class AuthentificationService {
 			// XOR it
 			byte[] alpha = SecurityUtils.xor(SecurityUtils.fromHex(token), x_1);
 			
-			// t1
-			Date t1 = new Date();
 			
 			url = qrUtils.renderQR(SecurityUtils.toHex(alpha) + "#" + (new Date()).hashCode());
-
-			cloudUser.getIdentifier().setLoginAttempt(t1);
 			
 			// send to authHandler
 			authentificationHandler.addToWaitList(cloudUser, token, qrUtils);

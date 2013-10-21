@@ -75,12 +75,17 @@ sap.ui.jsview("ui5.Auth", {
         	press: function(){
         		oQRDialog.close();
         		oQRDialog.destroyContent();
+        		
+        		// stop interval
+				clearInterval(interval);
         	}}));
         
 		oQRDialog.open();
 		
 		var interval;
 		
+		
+		// check if user is authed
 		function request () {
 			if (oController.isUserAuthed()) {
 				oQRDialog.removeContent(oImage);
@@ -91,6 +96,13 @@ sap.ui.jsview("ui5.Auth", {
 
 				 // stop interval
 				clearInterval(interval);
+				
+				// insert redirect button
+				oQRDialog.addButton(new sap.ui.commons.Button({
+		        	text: "REDIRECT", 
+		        	press: function(){
+		        		window.location.href = "/lock/restricted";
+		        	}}));
 			}
 		}
 		

@@ -47,6 +47,8 @@ public class GeneralFilter implements Filter {
 		
 		// FIXME
 		CloudUser cloudUser = userService.getCloudUser(req);
+		req.getSession().setAttribute("user", cloudUser);
+		
 		
 		chain.doFilter(req, res);
 		

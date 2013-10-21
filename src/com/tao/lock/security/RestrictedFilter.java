@@ -41,7 +41,7 @@ public class RestrictedFilter implements Filter {
 		HttpSession session = req.getSession();
 		
 		// check
-		if (session.getAttribute("auth") != "true")
+		if ((String) session.getAttribute("auth") != "true")
 			res.sendRedirect("/lock/unauthorized.xhtml");
 		else
 			chain.doFilter(req, res);

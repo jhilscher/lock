@@ -35,6 +35,7 @@
         <location>/notFound.xhtml</location>
   </error-page>
 
+  
   <!-- FILTER -->
   <filter>
       <filter-name>restricted</filter-name>
@@ -54,6 +55,14 @@
       <url-pattern>/general/*</url-pattern>
   </filter-mapping>
   
+   <filter>
+      <filter-name>qrcodes</filter-name>
+      <filter-class>com.tao.lock.security.QRCodeFilter</filter-class>
+  </filter>
+  <filter-mapping>
+      <filter-name>qrcodes</filter-name>
+      <url-pattern>/qrcodes/*</url-pattern>
+  </filter-mapping>
   
   <!-- SECURITY -->
   <security-constraint>
@@ -81,11 +90,13 @@
       <web-resource-name>Registration Page</web-resource-name>
       <url-pattern>/registrationArea.xhtml</url-pattern>
       <url-pattern>/authArea.xhtml</url-pattern>
+      <url-pattern>/qrcodes/*</url-pattern>
     </web-resource-collection>
     <auth-constraint>
       <role-name>Manager</role-name>
     </auth-constraint>
   </security-constraint>
+  
   
     <security-constraint>
     <web-resource-collection>

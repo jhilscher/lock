@@ -75,6 +75,9 @@ sap.ui.jsview("ui5.Register", {
         	press: function(){
         		oQRDialog.close();
         		oQRDialog.destroyContent();
+        		
+        		// stop interval
+				clearInterval(interval);
         	}}));
         
 		oQRDialog.open();

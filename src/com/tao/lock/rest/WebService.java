@@ -2,6 +2,7 @@ package com.tao.lock.rest;
 
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
+import java.util.Date;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.security.PermitAll;
@@ -28,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.tao.lock.entities.CloudUser;
+import com.tao.lock.qrservice.QRUtils;
 import com.tao.lock.rest.json.AuthentificationJSON;
 import com.tao.lock.rest.json.RegistrationJSON;
 import com.tao.lock.security.AuthentificationHandler;
@@ -159,6 +161,10 @@ import com.tao.lock.utils.Roles;
     		// Add to session
     		user.getSession().setAttribute("auth", "true");
     		
+    		// Update login attempt
+			user.getIdentifier().setLoginAttempt(new Date());
+			userService.update(user);
+    		
     		return Response.status(Response.Status.CREATED).entity("success").build();
 	    }
 	    
@@ -258,6 +264,12 @@ import com.tao.lock.utils.Roles;
 	    	if (url == null)
 	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
 	    	
+	    	
+	    	// add filename to session
+	    	request.getSession().setAttribute("qrcode", QRUtils.getFilenameFromUrl(url));
+	    	
+	    	LOGGER.info("Generated QR-Code with filename: . ", QRUtils.getFilenameFromUrl(url));
+	    	
 	    	return Response.ok().entity(url).build();
 	    	
 	    }
@@ -274,6 +286,13 @@ import com.tao.lock.utils.Roles;
 	    	String url = authentificationService.authentificateUser(request, context, user);
 	    	if (url == null)
 	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
+	    	
+	    	String filename = QRUtils.getFilenameFromUrl(url);
+	    	
+	    	// add filename to session
+	    	request.getSession().setAttribute("qrcode", filename);
+	    	
+	    	LOGGER.info("Generated QR-Code with filename: ", filename);
 	    	
 	    	return Response.ok().entity(url).build();
 	    	

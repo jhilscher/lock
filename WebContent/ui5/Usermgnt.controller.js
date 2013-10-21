@@ -16,26 +16,12 @@ sap.ui.controller( "ui5.Usermgnt" ,{
 	//
 	//}
 	
-	loadData: function () {
-		var json;
-		var url = "/lock/api/service/getallusers";
-		
-		$.ajax({
-   			type: "GET",
-   			url: url,
-   			async: false,
-   			success: function (data) {
-				json = data;
-   			}
-   		});
-		
-		return json;
-		
-	},
+
 	
-	removeClientId: function (userId, model) {
+	removeClientId: function (userId, model, table) {
 		
-		var _this = this;
+		var url = "/lock/api/service/getallusers";
+		table.setBusy(true);
 		
 		$.ajax({
     			type: "POST",
@@ -43,8 +29,10 @@ sap.ui.controller( "ui5.Usermgnt" ,{
     			data: 'id='+userId,
     			complete: function (xhr, statusCode) {
     				if(xhr.status == '200' || xhr.status == '201') {
-    					model.setData({modelData: _this.loadData() });
-    					
+    					//model.refresh(true);
+    					model.loadData(url);
+    					table.setBusy(false);
+    					table.rerender();
     				} 
     				else {
     					 sap.ui.commons.MessageBox.alert("Failed to delete mobile Client from user!");

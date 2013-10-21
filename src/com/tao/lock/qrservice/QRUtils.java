@@ -37,7 +37,9 @@ public class QRUtils {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(QRUtils.class);
 	
-	private final String DESC = "/";
+	private static final String DESC = "/";
+	private static final String FOLDER = "qrcodes";
+	
 	
 	private File file;
 	
@@ -104,7 +106,7 @@ public class QRUtils {
 		        // Generate random filename
 		        if (filePath == null) {
 					try {
-						filePath = nextPictureId() + FILE_TYPE;
+						filePath = FOLDER + DESC + nextPictureId() + FILE_TYPE;
 					} catch (NoSuchAlgorithmException e1) {
 						e1.printStackTrace();
 					}
@@ -155,6 +157,24 @@ public class QRUtils {
 		} 
 		return false;
 	} 
+	
+	/**
+	 * 	
+	 * @param url
+	 * @return
+	 */
+	public static String getFilenameFromUrl(String url) {
+		String[] temp = url.split("/");
+		
+		String filename;
+		
+		if (temp.length >= 2)
+			filename = temp[temp.length - 1];
+		else 
+			filename = url;
+		
+		return filename;
+	}
 	
 	/**
 	 * Creates a secure random String.

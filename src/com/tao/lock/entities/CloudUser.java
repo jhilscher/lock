@@ -2,6 +2,7 @@ package com.tao.lock.entities;
 
 import java.util.Date;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -19,6 +20,7 @@ import javax.persistence.Transient;
 import javax.servlet.http.HttpSession;
 import javax.validation.constraints.Size;
 
+import org.eclipse.persistence.annotations.CascadeOnDelete;
 import org.eclipse.persistence.annotations.Index;
 
 import com.google.gson.annotations.Expose;
@@ -69,7 +71,7 @@ public class CloudUser {
     private Date createdAt;
     
 	@Expose
-    @OneToOne(fetch=FetchType.EAGER)
+    @OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="identifierId")
     private ClientIdentifier identifier;
     

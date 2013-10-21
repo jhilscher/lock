@@ -62,6 +62,10 @@ public class UserDao extends Dao {
 	}
 
 	public CloudUser updateUser(CloudUser user) {
+		
+		//if (user.getIdentifier() != null)
+		//	update(user.getIdentifier());
+		
 		return update(user);
 	}
 	

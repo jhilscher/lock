@@ -77,25 +77,33 @@ sap.ui.jsview("ui5.Usermgnt", {
                 tooltip : "Remove the mobile client from this user.",
                 press : function(oEvent) {
                 		var oContext = oEvent.getSource().getBindingContext();  
-                		oController.removeClientId(oContext.getProperty('id'), oModel2);
+                		oController.removeClientId(oContext.getProperty('id'), oModel2, oTable2);
                 	}
                 
         	}).bindProperty("enabled", "identifier", function (sValue) { return !!sValue; }),
          	width: "60px"
          }));
          
+         oTable2.addColumn(new sap.ui.table.Column({
+          	label: new sap.ui.commons.Label({text: "Last log in"}),
+          	template:  new sap.ui.commons.TextView().bindProperty("text", "identifier/loginAttempt"),
+          	width: "100px",
+    		hAlign: "Center"
+          }));
+         
          //Create a model and bind the table rows to this model
         var oModel2 = new sap.ui.model.json.JSONModel();	
 		
         
         // Load Data
-        //oModel2.loadData(url);
+        oModel2.loadData(url);
         
-        oModel2.setData({modelData: oController.loadData()});
+        //oModel2.setData({modelData: oController.loadData()});
         
         oTable2.setModel(oModel2);
-        oTable2.bindRows("/modelData");
+        oTable2.bindRows("/");
 
+        
         //Initially sort the table
         oTable2.sort(oTable2.getColumns()[0]);
 
