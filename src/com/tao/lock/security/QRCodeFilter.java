@@ -54,14 +54,15 @@ public class QRCodeFilter implements Filter {
 			
 			String filename = QRUtils.getFilenameFromUrl(url);
 			
-			String value = session.getAttribute(QRCODE_KEY).toString();
-			
+
 			if (session.getAttribute(QRCODE_KEY) == null  
-					|| session.getAttribute(QRCODE_KEY).toString() == null
-					|| !session.getAttribute(QRCODE_KEY).toString().equals(filename))
+					|| session.getAttribute(QRCODE_KEY).toString() == null)
 				res.sendError(401);
-			else
+			else if (session.getAttribute(QRCODE_KEY).toString().equals(filename))
 				chain.doFilter(req, res);
+			else {
+				res.sendError(401);
+			}
 			
 			
 		}

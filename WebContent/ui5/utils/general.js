@@ -32,7 +32,7 @@
 			    
 			    
 				logout: function(){
-					alert("Logout Button has been clicked.\nThe application can now do whatever is required.");
+					logout();
 				},
 		});    
 
@@ -69,15 +69,24 @@
 				view = sap.ui.view({id:"view_lock_2", viewName:"ui5.Auth", type:sap.ui.core.mvc.ViewType.JS});
 			else if (key == "usermanagement")
 				view = sap.ui.view({id:"view_usermanagement_1", viewName:"ui5.Usermgnt", type:sap.ui.core.mvc.ViewType.JS});
-			else 
+			else {
 				view = sap.ui.view({id:"view_start_1", viewName:"ui5.Start", type:sap.ui.core.mvc.ViewType.JS});	
+				key = "start"; // set default value
+			}
+			
+			try {
+		        shell.setSelectedWorksetItem(key);
+		    } catch (e) {
+		    }
 			
 			shell.setContent(view, true);
 			window.location.hash = jQuery.sap.encodeURL(key);
 		};
 		
 
-
+		var logout = function () {
+			window.location.href = "/lock/logout.xhtml";
+		};
 
 
 

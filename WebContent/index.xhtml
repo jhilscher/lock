@@ -14,7 +14,12 @@
 			
 			sap.ui.localResources("ui5");
 			shell.placeAt("shellArea");
-			setShellContent("start");
+			
+			var pageHash = "start";
+			if (window.location.hash) {
+		        pageHash = window.location.hash.substring(1);
+		    }
+			setShellContent(pageHash);
 			
 	        
 			
