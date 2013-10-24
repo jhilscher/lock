@@ -1,5 +1,6 @@
 package com.tao.lock.rest;
 
+import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
@@ -8,6 +9,8 @@ import javax.annotation.ManagedBean;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,11 +26,20 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.sap.cloud.security.oauth2.*;
+import com.sap.core.connectivity.api.DestinationException;
+import com.sap.core.connectivity.api.HttpDestination;
 import com.tao.lock.entities.CloudUser;
 import com.tao.lock.qrservice.QRUtils;
 import com.tao.lock.rest.json.AuthentificationJSON;
@@ -264,7 +276,6 @@ import com.tao.lock.utils.Roles;
 	    	if (url == null)
 	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
 	    	
-	    	
 	    	// add filename to session
 	    	request.getSession().setAttribute("qrcode", QRUtils.getFilenameFromUrl(url));
 	    	
@@ -292,10 +303,57 @@ import com.tao.lock.utils.Roles;
 	    	// add filename to session
 	    	request.getSession().setAttribute("qrcode", filename);
 	    	
-	    	LOGGER.info("Generated QR-Code with filename: ", filename);
+	    	LOGGER.info("Generated QR-Code with filename: + filename");
 	    	
 	    	return Response.ok().entity(url).build();
 	    	
+	    }
+	    
+	    
+	    // FIXME: remove
+	    
+	    @GET
+	    @Path("/oauth")
+	    public Response oAuth() throws OAuthSystemException {
+	    	OAuthAuthorization authAuthorization = OAuthAuthorization.getOAuthAuthorizationService();
+		    if(!authAuthorization.isAuthorized(request, "access")){
+		    	 return Response.ok().entity("not authorized").build();
+		    } 
+		    
+
+		    return Response.ok().entity("fail").build();
+		    
+	    }
+	    
+	    
+	    // FIXME: remove
+	    @GET
+	    @Path("/ping")
+	    public Response ping() throws ClientProtocolException, IOException  {
+	    try {
+			// access the HttpDestination for the resource "pingdest" specified in the web.xml
+			InitialContext ctx = new InitialContext();
+			
+
+
+			@SuppressWarnings("deprecation")
+			HttpDestination destination = (HttpDestination) ctx.lookup("java:comp/env/connect");
+			HttpClient createHttpClient = destination.createHttpClient();
+
+			// make a GET-request to the backend;
+			// for basic authentication use HttpGet get = new HttpGet("pingbasic");
+			HttpGet get = new HttpGet("pingnoauth");
+			HttpResponse resp = createHttpClient.execute(get);
+			HttpEntity entity = resp.getEntity();
+			String respToString = EntityUtils.toString(entity);
+			int statusCode = resp.getStatusLine().getStatusCode();
+
+			return Response.ok().entity("Status code: " + statusCode + "Response: " + respToString).build();
+
+
+		} catch (NamingException e) {
+			throw new RuntimeException(e);
+		}
 	    }
 	}
 

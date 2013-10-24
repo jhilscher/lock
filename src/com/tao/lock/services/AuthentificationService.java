@@ -32,6 +32,10 @@ public class AuthentificationService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthentificationService.class);
 	
+	private static final int ITERATIONS = 1000;
+	
+	private static final int BYTE_SIZE = 64;
+	
 	@EJB
 	private RegistrationHandler registrationHandler;
 	
@@ -71,7 +75,7 @@ public class AuthentificationService {
 					byte[] salt = SecurityUtils.generateSalt(64);
 					
 					// securely hash the clientidkey
-					String hashedValue = SecurityUtils.pbkdf2(clientIdKey.toCharArray(), salt, 1000, 64);
+					String hashedValue = SecurityUtils.pbkdf2(clientIdKey.toCharArray(), salt, ITERATIONS, BYTE_SIZE);
 					
 					// TODO: ??? Save this stuff here, or after confirm, and keep it in memory till then
 					// save to db
@@ -132,11 +136,18 @@ public class AuthentificationService {
 			// XOR it
 			byte[] alpha = SecurityUtils.xor(SecurityUtils.fromHex(token), x_1);
 			
+			// new Date
+			Date t1 = new Date();
 			
-			url = qrUtils.renderQR(SecurityUtils.toHex(alpha) + "#" + (new Date()).hashCode());
+			//                                                        v Time in milliseconds
+			url = qrUtils.renderQR(SecurityUtils.toHex(alpha) + "#" + t1.getTime());
+			
+			// hashed token
+			String hashedToeken =  SecurityUtils.pbkdf2(token.toCharArray(), (String.valueOf(t1.getTime())).getBytes(), ITERATIONS, BYTE_SIZE);
+	
 			
 			// send to authHandler
-			authentificationHandler.addToWaitList(cloudUser, token, qrUtils);
+			authentificationHandler.addToWaitList(cloudUser, hashedToeken, qrUtils);
 
 			// FIXME: remove 
 			// errorMsg = "Token: " + token;
@@ -145,6 +156,8 @@ public class AuthentificationService {
 			
 		} catch (NoSuchAlgorithmException e) {
 			LOGGER.error("Could not find algorithm", e.getMessage());
+		} catch (InvalidKeySpecException e) {
+			LOGGER.error("InvalidKeySpecException", e.getMessage());
 		}  
 
 		return url;

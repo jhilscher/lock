@@ -142,6 +142,11 @@
     <res-type>com.sap.security.um.user.UserProvider</res-type>
   </resource-ref>
   
+  <resource-ref>  
+    <res-ref-name>connect</res-ref-name>  
+    <res-type>com.sap.core.connectivity.api.http.HttpDestination</res-type>  
+  </resource-ref>  
+  
   <!-- SERVLET -->
   <servlet>
     <servlet-name>Faces Servlet</servlet-name>
