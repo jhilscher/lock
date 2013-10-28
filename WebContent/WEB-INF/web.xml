@@ -144,7 +144,7 @@
   
   <resource-ref>  
     <res-ref-name>connect</res-ref-name>  
-    <res-type>com.sap.core.connectivity.api.http.HttpDestination</res-type>  
+    <res-type>com.sap.core.connectivity.api.http.HttpDestination</res-type> 
   </resource-ref>  
   
   <!-- SERVLET -->

@@ -2,6 +2,8 @@ package com.tao.lock.common;
 
 import java.io.IOException;
 
+import javax.ejb.EJB;
+import javax.inject.Named;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -15,20 +17,25 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.params.BasicHttpParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
-import com.sap.core.connectivity.api.DestinationException;
-import com.sap.core.connectivity.api.HttpDestination;
+import com.sap.core.connectivity.api.http.HttpDestination;
+import com.sap.core.connectivity.api.*;
+import com.tao.lock.connection.ConnectionService;
 
 /**
  * Servlet implementation class Test
  */
+
 @WebServlet("/Test")
 public class Test extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
+	
     /**
      * @see HttpServlet#HttpServlet()
      */
@@ -43,6 +50,8 @@ public class Test extends HttpServlet {
     protected void doGet(HttpServletRequest request,
 			HttpServletResponse response) throws ServletException, IOException {
 
+    	
+
     	String param = request.getParameter("url");
     	//String paramUser = request.getParameter("user");
     	
@@ -52,22 +61,20 @@ public class Test extends HttpServlet {
 			HttpDestination destination = (HttpDestination) ctx.lookup("java:comp/env/connect");
 			HttpClient createHttpClient = destination.createHttpClient();
 
+			
 			// make a GET-request to the backend;
 			// for basic authentication use HttpGet get = new HttpGet("pingbasic");
 			//HttpGet get = new HttpGet(param + ((paramUser != null)? "/"+paramUser : ""));
-			HttpGet get = new HttpGet(param);
+			HttpPost post = new HttpPost(param);
 		
-			//Param-Mapping
+			StringEntity se = new StringEntity("{\"clientId\":12,\"clientIdHash\":\"fwef\",\"salt\":\"saltwert\",\"secret\":\"meinsecret\"}");
 			
-			BasicHttpParams httpParams = new BasicHttpParams();
-			httpParams.setParameter("url", param);
-			//httpParams.setParameter("user", paramUser);
-			
-			
-			get.setParams(httpParams);
+        	post.addHeader("Accept", "application/json");
+        	post.addHeader("Content-Type", "application/json");
+            post.setEntity(se);
 			
 			
-			HttpResponse resp = createHttpClient.execute(get);
+			HttpResponse resp = createHttpClient.execute(post);
 			HttpEntity entity = resp.getEntity();
 			String respToString = EntityUtils.toString(entity);
 			int statusCode = resp.getStatusLine().getStatusCode();
@@ -77,6 +84,9 @@ public class Test extends HttpServlet {
 
 		} catch (NamingException e) {
 			throw new RuntimeException(e);
+		} catch (DestinationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 
 	}

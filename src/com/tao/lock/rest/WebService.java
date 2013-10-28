@@ -9,6 +9,7 @@ import javax.annotation.ManagedBean;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
+import javax.inject.Inject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.servlet.ServletContext;
@@ -40,6 +41,7 @@ import com.google.gson.GsonBuilder;
 import com.sap.cloud.security.oauth2.*;
 import com.sap.core.connectivity.api.DestinationException;
 import com.sap.core.connectivity.api.HttpDestination;
+import com.tao.lock.connection.ConnectionService;
 import com.tao.lock.entities.CloudUser;
 import com.tao.lock.qrservice.QRUtils;
 import com.tao.lock.rest.json.AuthentificationJSON;
@@ -74,7 +76,7 @@ import com.tao.lock.utils.Roles;
 	    //@Resource
 	    //private UserProvider userProvider;
 	    
-	    @Context
+	    @EJB
 	    private ServletContext context;
 		
 		@EJB
@@ -89,6 +91,8 @@ import com.tao.lock.utils.Roles;
 		@EJB
 		private AuthentificationService authentificationService;
    
+		@EJB
+		private ConnectionService connectionService;
 		/**
 		 * This builder will only include fields with @Expose annotation.
 		 * @return Gson
@@ -330,33 +334,46 @@ import com.tao.lock.utils.Roles;
 	    @GET
 	    @Path("/ping")
 	    public Response ping() throws ClientProtocolException, IOException  {
-	    try {
-			// access the HttpDestination for the resource "pingdest" specified in the web.xml
-			InitialContext ctx = new InitialContext();
-			
+	   
+	    	String response = connectionService.sendGetRequest();
 
+	    	
+	    	
+	    	if (response != null)
+	    		return Response.ok().entity(response).build();
+	    	else 
+	    		return Response.serverError().build();
 
-			@SuppressWarnings("deprecation")
-			HttpDestination destination = (HttpDestination) ctx.lookup("java:comp/env/connect");
-			HttpClient createHttpClient = destination.createHttpClient();
-
-			// make a GET-request to the backend;
-			// for basic authentication use HttpGet get = new HttpGet("pingbasic");
-			HttpGet get = new HttpGet("pingnoauth");
-			HttpResponse resp = createHttpClient.execute(get);
-			HttpEntity entity = resp.getEntity();
-			String respToString = EntityUtils.toString(entity);
-			int statusCode = resp.getStatusLine().getStatusCode();
-
-			return Response.ok().entity("Status code: " + statusCode + "Response: " + respToString).build();
-
-
-		} catch (NamingException e) {
-			throw new RuntimeException(e);
-		}
 	    }
-	}
+	    
+	    // FIXME: remove
+	    @GET
+	    @Path("/ping2")
+	    public Response ping2() throws ClientProtocolException, IOException  {
+	   
+	    	String response = connectionService.sendGetRequestWithoutLookup();
 
+	    	//context.getResource("java:comp/env/connect");
+	    		
+	    	
+	    	if (response != null)
+	    		return Response.ok().entity(response).build();
+	    	else 
+	    		return Response.serverError().build();
+
+	    }
+	    
+	    // FIXME: remove
+	    @GET
+	    @Path("/ping3")
+	    public String ping3() throws NamingException {
+		InitialContext ctx = new InitialContext();
+		HttpDestination destination = (HttpDestination) ctx.lookup("java:comp/env/connect");
+		
+		return "fadekn";
+	    }
+
+	}
 
 	
 
