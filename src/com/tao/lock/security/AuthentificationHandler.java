@@ -31,6 +31,13 @@ public class AuthentificationHandler {
 
 	private static final int TIMEOUT = 1000 * 60 * 2; // 2mins
 	
+	/**
+	 * Adds a user to the waitlist to authentification.
+	 * The waitlist entry is valid for 2mins.
+	 * @param user
+	 * @param token		Hashed Token
+	 * @param qrUtils
+	 */
 	public static void addToWaitList(final CloudUser user, final String token, final QRUtils qrUtils) {
 		
 		userMap.put(token, user);

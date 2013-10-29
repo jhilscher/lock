@@ -28,16 +28,21 @@ public class ClientIdentifier {
     @GeneratedValue
     private Long identifierId;
     
+    @Expose
+    private String UserName;
+    
     /**
      * x1.
      * Must be store in plain text.
      */
+    @Expose
     @Column
     private String secret;
     
     /**
      * random salt.
      */
+    @Expose
     @Column
     private String salt;
     
@@ -45,15 +50,14 @@ public class ClientIdentifier {
      * hashed and salted client id.
      * No need to store this in plain text.
      */
+    @Expose
     @Column
     private String hashedClientId;
 
-    @Expose
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date created;
 
-    @Expose
     @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date loginAttempt;
@@ -149,6 +153,16 @@ public class ClientIdentifier {
 	public void setLoginAttempt(Date loginAttempt) {
 		this.loginAttempt = loginAttempt;
 	}
+
+	public String getUserName() {
+		return UserName;
+	}
+
+	public void setUserName(String userName) {
+		UserName = userName;
+	}
+
+
 
 
     

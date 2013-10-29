@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.tao.lock.connection.ConnectionService;
 import com.tao.lock.entities.ClientIdentifier;
 import com.tao.lock.entities.CloudUser;
 import com.tao.lock.qrservice.QRUtils;
@@ -42,7 +43,8 @@ public class AuthentificationService {
 	@EJB
 	private AuthentificationHandler authentificationHandler;
 	
-
+	@EJB
+	private ConnectionService connectionService;
 	
 	/**
 	 * 
@@ -62,7 +64,6 @@ public class AuthentificationService {
 				
 				try {
 					
-
 					// attach session to this user
 					cloudUser.setSession(request.getSession());
 					
@@ -77,7 +78,7 @@ public class AuthentificationService {
 					// securely hash the clientidkey
 					String hashedValue = SecurityUtils.pbkdf2(clientIdKey.toCharArray(), salt, ITERATIONS, BYTE_SIZE);
 					
-					// TODO: ??? Save this stuff here, or after confirm, and keep it in memory till then
+					// TODO: remove Binding of ClientIdentifier to User
 					// save to db
 					ClientIdentifier id1 = new ClientIdentifier();
 					id1.setSalt(SecurityUtils.toHex(salt));
@@ -85,7 +86,8 @@ public class AuthentificationService {
 					id1.setCreated(new Date());
 
 					cloudUser.setIdentifier(id1);
-					
+
+
 					// TODO: Test later
 					registrationHandler.addToWaitList(cloudUser, clientIdKey, qrUtils);
 					

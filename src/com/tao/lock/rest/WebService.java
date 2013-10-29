@@ -42,6 +42,7 @@ import com.sap.cloud.security.oauth2.*;
 import com.sap.core.connectivity.api.DestinationException;
 import com.sap.core.connectivity.api.HttpDestination;
 import com.tao.lock.connection.ConnectionService;
+import com.tao.lock.entities.ClientIdentifier;
 import com.tao.lock.entities.CloudUser;
 import com.tao.lock.qrservice.QRUtils;
 import com.tao.lock.rest.json.AuthentificationJSON;
@@ -72,11 +73,7 @@ import com.tao.lock.utils.Roles;
 		@Context
 	    private HttpServletResponse response;
 
-	    // not working
-	    //@Resource
-	    //private UserProvider userProvider;
-	    
-	    @EJB
+		@Context
 	    private ServletContext context;
 		
 		@EJB
@@ -93,11 +90,12 @@ import com.tao.lock.utils.Roles;
    
 		@EJB
 		private ConnectionService connectionService;
+		
 		/**
 		 * This builder will only include fields with @Expose annotation.
 		 * @return Gson
 		 */
-		public Gson getGson () {
+		public static Gson getGson () {
 			return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		}
 		
@@ -152,14 +150,20 @@ import com.tao.lock.utils.Roles;
 	    	//lookup
 	    	CloudUser user = authentificationHandler.tryToGetUserToAuth(r1);
 	    	
+	    	
 	    	if (user == null)
+	    		return Response.status(Response.Status.UNAUTHORIZED).build();
+	    	
+	    	
+	    	ClientIdentifier cId = connectionService.getClientIdentifier(user.getUserName());
+	    	if (cId == null)
 	    		return Response.status(Response.Status.UNAUTHORIZED).build();
 	    	
 	    	
     		boolean authed = false;
 	    	
     		try {
-				authed = SecurityUtils.validateKey(authJSON.getClientIdKey().toCharArray(), user.getIdentifier().getHashedClientId(),  user.getIdentifier().getSalt());
+				authed = SecurityUtils.validateKey(authJSON.getClientIdKey().toCharArray(), cId.getHashedClientId(),  cId.getSalt());
 			} catch (NoSuchAlgorithmException e) {
 				LOGGER.error(e.getMessage());
 			} catch (InvalidKeySpecException e) {
@@ -224,14 +228,21 @@ import com.tao.lock.utils.Roles;
 	    	// add x_1 to the user
 	    	user.getIdentifier().setSecret(registrationJSON.getX1());
 	    	
+	    	// TODO: remove the bindung
 	    	// save user with identifier to db
 	    	userService.update(user);
 	    	
+			
+			// TODO: implement nicely
+			// Add to SCC
 	    	
+	    	ClientIdentifier cId = user.getIdentifier();
+	    	cId.setUserName(user.getUserName());
+			String response = connectionService.registerUser(cId);
+
 	    	clientIdKey = null;
 	    	registrationJSON = null;
 	    	
-
 	    	return Response.status(Response.Status.CREATED).entity("success").build();
 	    }
 	    
@@ -252,6 +263,8 @@ import com.tao.lock.utils.Roles;
 	    @RolesAllowed(Roles.ADMIN)
 	    public Response removeClientIdFromUser(@FormParam("id") long id) {
 	    	CloudUser user = userService.removeIdentifierFromUser(id);
+	    	
+	    	connectionService.DeleteClientIdentifier(user.getUserName());
 	    	
 	    	return (user == null) ? 
 	    			Response.status(Response.Status.NO_CONTENT).entity("user not found").build() :
@@ -366,11 +379,14 @@ import com.tao.lock.utils.Roles;
 	    // FIXME: remove
 	    @GET
 	    @Path("/ping3")
-	    public String ping3() throws NamingException {
-		InitialContext ctx = new InitialContext();
-		HttpDestination destination = (HttpDestination) ctx.lookup("java:comp/env/connect");
-		
-		return "fadekn";
+	    public Response ping3() throws NamingException {
+	    	
+	    	CloudUser user = userService.getCloudUser(request);
+	    	ClientIdentifier response = connectionService.getClientIdentifier(user.getUserName());
+
+	    	return Response.ok().entity(response.toString()).build();
+
+	    	
 	    }
 
 	}

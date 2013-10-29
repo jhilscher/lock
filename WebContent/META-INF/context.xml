@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Context>
-<Resource name="connect" 
+<Resource name="context/connect" 
     type="com.sap.core.connectivity.api.http.HttpDestination"
     description="SCC"
     auth="Container"/>

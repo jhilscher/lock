@@ -132,7 +132,7 @@ public class UserService {
 		if (ssoUser == null)
 			return null;
 		
-		// try finding the coresponding local user
+		// try finding the corresponding local user
 		CloudUser cloudUser = getUserByName(ssoUser.getName());
 		
 		if (cloudUser != null) {
@@ -142,7 +142,6 @@ public class UserService {
 		
 		cloudUser = new CloudUser();
 		cloudUser.setUserName(ssoUser.getName());
-		
 		
 		try {
 			cloudUser.setEmail(ssoUser.getAttribute("email"));

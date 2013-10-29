@@ -25,6 +25,7 @@ import org.apache.http.util.EntityUtils;
 
 import com.sap.core.connectivity.api.http.HttpDestination;
 import com.sap.core.connectivity.api.*;
+import com.sap.core.connectivity.httpdestination.api.HttpDestinationException;
 import com.tao.lock.connection.ConnectionService;
 
 /**
@@ -58,9 +59,14 @@ public class Test extends HttpServlet {
 		try {
 			// access the HttpDestination for the resource "pingdest" specified in the web.xml
 			Context ctx = new InitialContext();
-			HttpDestination destination = (HttpDestination) ctx.lookup("java:comp/env/connect");
-			HttpClient createHttpClient = destination.createHttpClient();
+//			HttpDestination destination = (HttpDestination) ctx.lookup("java:comp/env/connect");
+//			HttpClient createHttpClient = destination.createHttpClient();
 
+			Context xmlCon = (Context) ctx.lookup("java:comp/env");
+			//HttpDestination destination1 = (HttpDestination) xmlCon.lookup("context/connect");
+			
+			com.sap.core.connectivity.api.HttpDestination httpDestination = com.sap.core.connectivity.httpdestination.api.HttpDestinationFactory.getHttpDestination("connect");
+			HttpClient createHttpClient = httpDestination.createHttpClient();
 			
 			// make a GET-request to the backend;
 			// for basic authentication use HttpGet get = new HttpGet("pingbasic");
@@ -82,9 +88,15 @@ public class Test extends HttpServlet {
 			//response.getWriter().println("Status code: " + statusCode);
 			response.getWriter().println(respToString);
 
+//		} catch (NamingException e) {
+//			throw new RuntimeException(e);
+//		} catch (DestinationException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+		} catch (HttpDestinationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		} catch (NamingException e) {
-			throw new RuntimeException(e);
-		} catch (DestinationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

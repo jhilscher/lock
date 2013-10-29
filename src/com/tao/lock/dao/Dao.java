@@ -5,6 +5,7 @@ import java.io.Serializable;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.PersistenceContext;
 
 import org.slf4j.Logger;
@@ -35,4 +36,5 @@ public class Dao implements Serializable{
         em.remove(t);
         em.flush();
     }
+    
 }

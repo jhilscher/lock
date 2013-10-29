@@ -35,10 +35,7 @@ import com.google.gson.annotations.Expose;
 @NamedQueries({
 	@NamedQuery(name = CloudUser.QUERY_BYALLUSERS, query = "SELECT p FROM CloudUser p"),
 	@NamedQuery(name = CloudUser.QUERY_BYUSERNAME, query = "SELECT u FROM CloudUser u WHERE lower(u.userName) = lower(:userName)"),
-	@NamedQuery(name = CloudUser.QUERY_BYUSERID, query = "SELECT u FROM CloudUser u WHERE u.id = :id"),
-	@NamedQuery(name = CloudUser.QUERY_BYUSERNAMEWITHIDENTIFIER, 
-				query = "SELECT u FROM CloudUser u "
-						+ "LEFT JOIN FETCH u.identifier WHERE lower(u.userName) = lower(:userName)")
+	@NamedQuery(name = CloudUser.QUERY_BYUSERID, query = "SELECT u FROM CloudUser u WHERE u.id = :id")
 	})
 public class CloudUser {
 	
@@ -73,7 +70,8 @@ public class CloudUser {
 	@Expose
     @OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="identifierId")
-    private ClientIdentifier identifier;
+    //@Transient
+	private ClientIdentifier identifier;
     
     // not mapped to the db
     // TODO: currently working
