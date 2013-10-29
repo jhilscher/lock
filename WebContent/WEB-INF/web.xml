@@ -39,7 +39,7 @@
   <!-- FILTER -->
   <filter>
       <filter-name>restricted</filter-name>
-      <filter-class>com.tao.lock.security.RestrictedFilter</filter-class>
+      <filter-class>com.tao.lock.security.filter.RestrictedFilter</filter-class>
   </filter>
   <filter-mapping>
       <filter-name>restricted</filter-name>
@@ -48,7 +48,7 @@
   
   <filter>
       <filter-name>general</filter-name>
-      <filter-class>com.tao.lock.security.GeneralFilter</filter-class>
+      <filter-class>com.tao.lock.security.filter.GeneralFilter</filter-class>
   </filter>
   <filter-mapping>
       <filter-name>general</filter-name>
@@ -57,7 +57,7 @@
   
    <filter>
       <filter-name>qrcodes</filter-name>
-      <filter-class>com.tao.lock.security.QRCodeFilter</filter-class>
+      <filter-class>com.tao.lock.security.filter.QRCodeFilter</filter-class>
   </filter>
   <filter-mapping>
       <filter-name>qrcodes</filter-name>

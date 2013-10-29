@@ -16,8 +16,8 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class AccessLocalExceptionMapper implements ExceptionMapper<AccessLocalException> {
 
-@Context 
-HttpServletRequest request;
+	@Context 
+	HttpServletRequest request;
     
     @Override
     public Response toResponse(AccessLocalException exception) {

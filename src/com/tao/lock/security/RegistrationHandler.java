@@ -9,13 +9,14 @@ import java.util.TimerTask;
 
 
 
+
 import javax.inject.Singleton;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tao.lock.entities.CloudUser;
-import com.tao.lock.qrservice.QRUtils;
+import com.tao.lock.utils.QRUtils;
 
 /**
  * 

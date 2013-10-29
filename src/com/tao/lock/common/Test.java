@@ -2,8 +2,6 @@ package com.tao.lock.common;
 
 import java.io.IOException;
 
-import javax.ejb.EJB;
-import javax.inject.Named;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -16,17 +14,11 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
 import org.apache.http.util.EntityUtils;
 
-import com.sap.core.connectivity.api.http.HttpDestination;
-import com.sap.core.connectivity.api.*;
 import com.sap.core.connectivity.httpdestination.api.HttpDestinationException;
-import com.tao.lock.connection.ConnectionService;
 
 /**
  * Servlet implementation class Test

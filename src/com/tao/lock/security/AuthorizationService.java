@@ -28,10 +28,6 @@ public class AuthorizationService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthorizationService.class);
 	
-	// geht nicht
-	//@Resource
-	//private UserProvider userProvider;
-
 	
 	public AuthorizationService() {};
 	

@@ -25,11 +25,11 @@ import com.sap.security.um.user.UnsupportedUserAttributeException;
 import com.sap.security.um.user.User;
 import com.tao.lock.entities.CloudUser;
 import com.tao.lock.entities.ClientIdentifier;
-import com.tao.lock.qrservice.QRUtils;
 import com.tao.lock.security.AuthorizationService;
 import com.tao.lock.security.RegistrationHandler;
 import com.tao.lock.security.SecurityUtils;
 import com.tao.lock.services.UserService;
+import com.tao.lock.utils.QRUtils;
 
 @Named
 @SessionScoped

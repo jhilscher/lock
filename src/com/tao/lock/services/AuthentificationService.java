@@ -13,13 +13,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.tao.lock.connection.ConnectionService;
 import com.tao.lock.entities.ClientIdentifier;
 import com.tao.lock.entities.CloudUser;
-import com.tao.lock.qrservice.QRUtils;
 import com.tao.lock.security.AuthentificationHandler;
 import com.tao.lock.security.RegistrationHandler;
 import com.tao.lock.security.SecurityUtils;
+import com.tao.lock.utils.QRUtils;
 import com.tao.lock.utils.Roles;
 
 /**
