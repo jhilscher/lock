@@ -68,13 +68,14 @@ public class CloudUser {
     private Date createdAt;
     
 	@Expose
+    @Column()
+	private Boolean isRegistered;
+	
+	@Expose
     @OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
     @JoinColumn(name="identifierId")
-    //@Transient
 	private ClientIdentifier identifier;
     
-    // not mapped to the db
-    // TODO: currently working
     @Transient
     private HttpSession session;
     
@@ -171,6 +172,14 @@ public class CloudUser {
 		return "CloudUser [id=" + id + ", userName=" + userName + ", email="
 				+ email + ", createdAt=" + createdAt + ", session=" + session
 				+ "]";
+	}
+
+	public Boolean getIsRegistered() {
+		return isRegistered;
+	}
+
+	public void setIsRegistered(Boolean isRegistered) {
+		this.isRegistered = isRegistered;
 	}
 
 

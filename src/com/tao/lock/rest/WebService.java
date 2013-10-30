@@ -57,7 +57,6 @@ import com.tao.lock.utils.Roles;
 
 		private static final Logger LOGGER = LoggerFactory.getLogger(WebService.class);
 
-		// geht
 		@Context
 		private HttpServletRequest request;
 

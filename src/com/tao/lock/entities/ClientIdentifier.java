@@ -162,6 +162,14 @@ public class ClientIdentifier {
 		UserName = userName;
 	}
 
+	@Override
+	public String toString() {
+		return "ClientIdentifier [identifierId=" + identifierId + ", UserName="
+				+ UserName + ", secret=" + secret + ", salt=" + salt
+				+ ", hashedClientId=" + hashedClientId + ", created=" + created
+				+ ", loginAttempt=" + loginAttempt + "]";
+	}
+
 
 
 

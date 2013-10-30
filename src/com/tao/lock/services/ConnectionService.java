@@ -2,22 +2,16 @@ package com.tao.lock.services;
 
 import java.io.IOException;
 
-import javax.annotation.PostConstruct;
-import javax.annotation.security.RolesAllowed;
 import javax.ejb.Stateless;
 import javax.naming.Binding;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingEnumeration;
 import javax.naming.NamingException;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.MediaType;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.ParseException;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -27,16 +21,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
-import com.sap.core.connectivity.api.DestinationFactory;
-import com.sap.core.connectivity.api.DestinationNotFoundException;
 import com.sap.core.connectivity.api.HttpDestination;
 //import com.sap.core.connectivity.api.DestinationException;
 //import com.sap.core.connectivity.api.http.HttpDestination;
 import com.sap.core.connectivity.httpdestination.api.HttpDestinationException;
 import com.tao.lock.entities.ClientIdentifier;
-import com.tao.lock.entities.CloudUser;
 import com.tao.lock.rest.WebService;
-import com.tao.lock.utils.Roles;
 
 
 /**
@@ -47,6 +37,7 @@ import com.tao.lock.utils.Roles;
  * Exchanges user-data.
  *
  */
+@SuppressWarnings("deprecation")
 @Stateless
 public class ConnectionService {
 
@@ -79,7 +70,7 @@ public class ConnectionService {
 		Gson gson = WebService.getGson();
 		String json = gson.toJson(cId);
 		
-		LOGGER.info("+++ JSON Connection Call: " + json);
+		LOGGER.info("JSON Connection Call: " + json);
 		
     	post.addHeader("Accept", "application/json");
     	post.addHeader("Content-Type", "application/json");
@@ -91,7 +82,7 @@ public class ConnectionService {
 		
 		String respToString = EntityUtils.toString(entity);
 		
-		LOGGER.info("+++ Response Connection Call: " + respToString);
+		LOGGER.info("Response Connection Call: " + respToString);
 		//int statusCode = resp.getStatusLine().getStatusCode();
 		
 		return respToString;
@@ -114,7 +105,6 @@ public class ConnectionService {
 	 */
 	public ClientIdentifier getClientIdentifier(String userName) {
 		try {
-			
 			
 			httpClient = getHttpClient();
 				
