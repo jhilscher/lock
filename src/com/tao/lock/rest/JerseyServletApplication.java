@@ -3,6 +3,7 @@ package com.tao.lock.rest;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
 /**
@@ -11,7 +12,7 @@ import javax.ws.rs.core.Application;
  * @author Joerg Hilscher.
  *
  */
-//@ApplicationPath("api")
+@ApplicationPath("api")
 public class JerseyServletApplication extends Application   {
 
     @Override

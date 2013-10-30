@@ -25,8 +25,8 @@ import com.sap.core.connectivity.api.HttpDestination;
 //import com.sap.core.connectivity.api.DestinationException;
 //import com.sap.core.connectivity.api.http.HttpDestination;
 import com.sap.core.connectivity.httpdestination.api.HttpDestinationException;
-import com.tao.lock.entities.ClientIdentifier;
 import com.tao.lock.rest.WebService;
+import com.tao.lock.rest.json.ClientIdentifierPojo;
 
 
 /**
@@ -58,7 +58,7 @@ public class ConnectionService {
 	 * @param cId
 	 * @return
 	 */
-	public String registerUser(ClientIdentifier cId) {
+	public String registerUser(ClientIdentifierPojo cId) {
 		try {
 			
 		
@@ -103,7 +103,7 @@ public class ConnectionService {
 	 * @param userName
 	 * @return
 	 */
-	public ClientIdentifier getClientIdentifier(String userName) {
+	public ClientIdentifierPojo getClientIdentifier(String userName) {
 		try {
 			
 			httpClient = getHttpClient();
@@ -117,7 +117,7 @@ public class ConnectionService {
 			
 			// Build up from JSON.
 			Gson gson = WebService.getGson();
-			ClientIdentifier json = gson.fromJson(respToString, ClientIdentifier.class);
+			ClientIdentifierPojo json = gson.fromJson(respToString, ClientIdentifierPojo.class);
 			
 			return json;
 			
@@ -132,6 +132,52 @@ public class ConnectionService {
 			return null;
 	}
 	
+
+	public String updateClientIdentifier(ClientIdentifierPojo cId) {
+		try {
+			
+			httpClient = getHttpClient();
+			
+			HttpPost post = new HttpPost("update");
+			
+			// Build up JSON.
+			Gson gson = WebService.getGson();
+			String json = gson.toJson(cId);
+			
+			LOGGER.info("JSON Connection Call: " + json);
+			
+	    	post.addHeader("Accept", "application/json");
+	    	post.addHeader("Content-Type", "application/json");
+	
+	    	post.setEntity(new StringEntity(json));
+			
+			HttpResponse resp = httpClient.execute(post);
+			HttpEntity entity = resp.getEntity();
+			
+			String respToString = EntityUtils.toString(entity);
+			
+			LOGGER.info("Response Connection Call: " + respToString);
+			//int statusCode = resp.getStatusLine().getStatusCode();
+			
+			return respToString;
+		
+		} catch (ParseException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (HttpDestinationException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+		
+	}
+	
+	/**
+	 * 
+	 * @param userName
+	 * @return
+	 */
 	public Boolean DeleteClientIdentifier(String userName) {
 		
 		try {
@@ -294,4 +340,5 @@ public class ConnectionService {
 	}
 
 	}
+
 }

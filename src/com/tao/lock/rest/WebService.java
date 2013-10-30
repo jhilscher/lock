@@ -32,9 +32,9 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.sap.cloud.security.oauth2.OAuthAuthorization;
 import com.sap.cloud.security.oauth2.OAuthSystemException;
-import com.tao.lock.entities.ClientIdentifier;
 import com.tao.lock.entities.CloudUser;
 import com.tao.lock.rest.json.AuthentificationJSON;
+import com.tao.lock.rest.json.ClientIdentifierPojo;
 import com.tao.lock.rest.json.RegistrationJSON;
 import com.tao.lock.security.AuthentificationHandler;
 import com.tao.lock.security.RegistrationHandler;
@@ -115,7 +115,7 @@ import com.tao.lock.utils.Roles;
 	    @RolesAllowed(Roles.MANAGER)
 	    public Response regPolling() {
 	    	
-	    	if (userService.getCloudUser(request).getIdentifier() != null)
+	    	if (userService.getCloudUser(request).getIsRegistered())
 	    				return Response.ok().build();
 
 	    	return Response.status(Response.Status.NO_CONTENT).build();
@@ -145,7 +145,7 @@ import com.tao.lock.utils.Roles;
 	    		return Response.status(Response.Status.UNAUTHORIZED).build();
 	    	
 	    	
-	    	ClientIdentifier cId = connectionService.getClientIdentifier(user.getUserName());
+	    	ClientIdentifierPojo cId = connectionService.getClientIdentifier(user.getUserName());
 	    	if (cId == null)
 	    		return Response.status(Response.Status.UNAUTHORIZED).build();
 	    	
@@ -172,8 +172,8 @@ import com.tao.lock.utils.Roles;
     		user.getSession().setAttribute("auth", "true");
     		
     		// Update login attempt
-			user.getIdentifier().setLoginAttempt(new Date());
-			userService.update(user);
+    		cId.setLoginAttempt(new Date());
+			connectionService.updateClientIdentifier(cId);
     		
     		return Response.status(Response.Status.CREATED).entity("success").build();
 	    }
@@ -194,16 +194,18 @@ import com.tao.lock.utils.Roles;
 	    	String clientIdKey = registrationJSON.getClientIdKey();	
 	    	
 	    	@SuppressWarnings("static-access")
-			CloudUser user = registrationHandler.tryToGetUserToRegister(clientIdKey);
+			ClientIdentifierPojo clientIdentifierPojo = registrationHandler.tryToGetUserToRegister(clientIdKey);
 	    	
-	    	if (user == null)
-	    		return Response.status(Response.Status.UNAUTHORIZED).entity("code timed out").build();
+	    	CloudUser user = userService.getUserByName(clientIdentifierPojo.getUserName());
+	    	
+	    	if (clientIdentifierPojo == null || user == null)
+	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
 	    	
 	    	// Check for correct client key?
 	    	boolean authed = false;
 	    	
 	    	try {
-	    		authed = SecurityUtils.validateKey(clientIdKey.toCharArray(), user.getIdentifier().getHashedClientId(),  user.getIdentifier().getSalt());
+	    		authed = SecurityUtils.validateKey(clientIdKey.toCharArray(), clientIdentifierPojo.getHashedClientId(),  clientIdentifierPojo.getSalt());
 			} catch (NoSuchAlgorithmException e) {
 				LOGGER.error(e.getMessage());
 				e.printStackTrace();
@@ -216,19 +218,13 @@ import com.tao.lock.utils.Roles;
 	    		return Response.status(Response.Status.UNAUTHORIZED).entity("key is wrong").build();
 	    	
 	    	// add x_1 to the user
-	    	user.getIdentifier().setSecret(registrationJSON.getX1());
+	    	clientIdentifierPojo.setSecret(registrationJSON.getX1());
+	    	connectionService.registerUser(clientIdentifierPojo);
 	    	
-	    	// TODO: remove the bindung
 	    	// save user with identifier to db
+	    	user.setIsRegistered(true);
 	    	userService.update(user);
 	    	
-			
-			// TODO: implement nicely
-			// Add to SCC
-	    	
-	    	ClientIdentifier cId = user.getIdentifier();
-	    	cId.setUserName(user.getUserName());
-			String response = connectionService.registerUser(cId);
 
 	    	clientIdKey = null;
 	    	registrationJSON = null;
@@ -252,13 +248,17 @@ import com.tao.lock.utils.Roles;
 	    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
 	    @RolesAllowed(Roles.ADMIN)
 	    public Response removeClientIdFromUser(@FormParam("id") long id) {
-	    	CloudUser user = userService.removeIdentifierFromUser(id);
 	    	
+	    	CloudUser user = userService.getUserById(id);
+	    	
+	    	if (user == null)
+	    		Response.status(Response.Status.NO_CONTENT).entity("user not found").build();
+	    	
+	    	user.setIsRegistered(false);
 	    	connectionService.DeleteClientIdentifier(user.getUserName());
+	    	userService.update(user);
 	    	
-	    	return (user == null) ? 
-	    			Response.status(Response.Status.NO_CONTENT).entity("user not found").build() :
-	    				Response.status(Response.Status.CREATED).entity("success").build();
+	    	return Response.status(Response.Status.CREATED).entity("success").build();
 	    	
 	    }
 	    
@@ -276,6 +276,7 @@ import com.tao.lock.utils.Roles;
 	    public Response getRegisterQr() {
 	    	
 	    	CloudUser user = userService.getCloudUser(request);
+	    	
 	    	if (user == null)
 	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
 	    	
@@ -372,7 +373,7 @@ import com.tao.lock.utils.Roles;
 	    public Response ping3() throws NamingException {
 	    	
 	    	CloudUser user = userService.getCloudUser(request);
-	    	ClientIdentifier response = connectionService.getClientIdentifier(user.getUserName());
+	    	ClientIdentifierPojo response = connectionService.getClientIdentifier(user.getUserName());
 
 	    	return Response.ok().entity(response.toString()).build();
 

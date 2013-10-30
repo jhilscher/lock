@@ -57,6 +57,14 @@ public class CloudUser {
     private String userName;
     
 	@Expose
+	@Column
+	private String firstName;
+	
+	@Expose
+	@Column
+	private String lastName;
+	
+	@Expose
     @Column(unique = true, nullable = false)
     @Index
     @Size(min = 4, max = 256)
@@ -70,12 +78,7 @@ public class CloudUser {
 	@Expose
     @Column()
 	private Boolean isRegistered;
-	
-	@Expose
-    @OneToOne(fetch=FetchType.EAGER, cascade = CascadeType.ALL)
-    @JoinColumn(name="identifierId")
-	private ClientIdentifier identifier;
-    
+	    
     @Transient
     private HttpSession session;
     
@@ -85,6 +88,12 @@ public class CloudUser {
     @PrePersist
     protected void onCreate() {
         createdAt = new Date();
+        
+        // set default value
+        if (isRegistered == null )  
+        {  
+        	isRegistered = false;
+        }
     }
     
     public long getId() {
@@ -117,14 +126,6 @@ public class CloudUser {
 
 	public void setCreatedAt(Date createdAt) {
 		this.createdAt = createdAt;
-	}
-
-	public ClientIdentifier getIdentifier() {
-		return identifier;
-	}
-
-	public void setIdentifier(ClientIdentifier identifier) {
-		this.identifier = identifier;
 	}
 
 	public HttpSession getSession() {
@@ -180,6 +181,22 @@ public class CloudUser {
 
 	public void setIsRegistered(Boolean isRegistered) {
 		this.isRegistered = isRegistered;
+	}
+
+	public String getFirstName() {
+		return firstName;
+	}
+
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public String getLastName() {
+		return lastName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
 	}
 
 

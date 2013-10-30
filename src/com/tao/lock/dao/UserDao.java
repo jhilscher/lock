@@ -8,7 +8,6 @@ import javax.ejb.Stateless;
 import javax.persistence.NoResultException;
 import javax.persistence.NonUniqueResultException;
 
-import com.tao.lock.entities.ClientIdentifier;
 import com.tao.lock.entities.CloudUser;
 import com.tao.lock.utils.Roles;
 
@@ -69,13 +68,5 @@ public class UserDao extends Dao {
 		return update(user);
 	}
 	
-	@RolesAllowed(Roles.ADMIN)
-	public void deleteClientIdFromUser (CloudUser user) {
-		ClientIdentifier id = user.getIdentifier();
-		if (id != null) {
-			user.setIdentifier(null);
-			remove(id);
-		}
-	}
-	
+
 }

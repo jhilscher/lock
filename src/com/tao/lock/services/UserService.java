@@ -65,33 +65,7 @@ public class UserService {
 		return userDao.addUser(user);
 	}
 	
-	/**
-	 * Remove the identifier from the user.
-	 * @param user
-	 * @return	updated User.
-	 */
-	@RolesAllowed(Roles.ADMIN)
-	public CloudUser removeIdentifierFromUser(CloudUser user) {
-		if (user != null)
-			userDao.deleteClientIdFromUser(user);
-		
-		return user;
-	}
-	
-	/**
-	 * Remove the identifier from the user.
-	 * @param id
-	 * @return	updated User.
-	 */
-	@RolesAllowed(Roles.ADMIN)
-	public CloudUser removeIdentifierFromUser(long id) {
-		CloudUser user = userDao.getUserById(id);
-		
-		if (user != null)	
-			userDao.deleteClientIdFromUser(user);
-		
-		return user;
-	}
+
 	
 	// WebService#register needs this -> PermitAll
 	@PermitAll
@@ -143,12 +117,19 @@ public class UserService {
 		cloudUser = new CloudUser();
 		cloudUser.setUserName(ssoUser.getName());
 		
+		// fill cloudUser with data from SSO
 		try {
 			cloudUser.setEmail(ssoUser.getAttribute("email"));
+			cloudUser.setLastName(ssoUser.getAttribute("lastname"));
+			cloudUser.setFirstName(ssoUser.getAttribute("firstname"));
 		} catch (UnsupportedUserAttributeException e) {
 			LOGGER.error("Attribute email missing!", e.getMessage());
 		}
 		
 		return addUser(cloudUser);
+	}
+
+	public CloudUser getUserById(long id) {
+		return userDao.getUserById(id);
 	}
 }

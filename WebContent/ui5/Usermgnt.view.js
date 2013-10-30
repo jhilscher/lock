@@ -63,7 +63,7 @@ sap.ui.jsview("ui5.Usermgnt", {
         		label: new sap.ui.commons.Label({text: "Mobile Registered?"}),
         		template: new sap.ui.commons.CheckBox({
         			editable: false
-        			}).bindProperty("checked", "identifier", function (sValue) { return !!sValue; }),
+        			}).bindProperty("checked", "isRegistered"),
         		sortProperty: "checked",
         		filterProperty: "checked",
         		width: "50px",
@@ -80,7 +80,7 @@ sap.ui.jsview("ui5.Usermgnt", {
                 		oController.removeClientId(oContext.getProperty('id'), oModel2, oTable2);
                 	}
                 
-        	}).bindProperty("enabled", "identifier", function (sValue) { return !!sValue; }),
+        	}).bindProperty("enabled", "isRegistered", function (sValue) { return !!sValue; }),
          	width: "60px"
          }));
          

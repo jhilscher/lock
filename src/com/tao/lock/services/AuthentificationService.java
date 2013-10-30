@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.tao.lock.entities.ClientIdentifier;
 import com.tao.lock.entities.CloudUser;
+import com.tao.lock.rest.json.ClientIdentifierPojo;
 import com.tao.lock.security.AuthentificationHandler;
 import com.tao.lock.security.RegistrationHandler;
 import com.tao.lock.security.SecurityUtils;
@@ -50,6 +50,7 @@ public class AuthentificationService {
 	 * @param request	HttpServletRequest
 	 * @return URL of the QR-Code, or null
 	 */
+	@SuppressWarnings("static-access")
 	@RolesAllowed(Roles.MANAGER)
 	public String registerUser(HttpServletRequest request, ServletContext context, CloudUser cloudUser) {
 
@@ -71,24 +72,23 @@ public class AuthentificationService {
 					
 					url = qrUtils.renderQR(clientIdKey);
 
-
 					byte[] salt = SecurityUtils.generateSalt(64);
 					
 					// securely hash the clientidkey
 					String hashedValue = SecurityUtils.pbkdf2(clientIdKey.toCharArray(), salt, ITERATIONS, BYTE_SIZE);
 					
-					// TODO: remove Binding of ClientIdentifier to User
-					// save to db
-					ClientIdentifier id1 = new ClientIdentifier();
+					// add to pojo
+					ClientIdentifierPojo id1 = new ClientIdentifierPojo();
 					id1.setSalt(SecurityUtils.toHex(salt));
 					id1.setHashedClientId(hashedValue);
 					id1.setCreated(new Date());
-
-					cloudUser.setIdentifier(id1);
-
+					id1.setUserName(cloudUser.getUserName());
+					
+					// set registered flag
+					cloudUser.setIsRegistered(false);
 
 					// TODO: Test later
-					registrationHandler.addToWaitList(cloudUser, clientIdKey, qrUtils);
+					registrationHandler.addToWaitList(id1, clientIdKey, qrUtils);
 					
 					// tell gc to remove secret
 					clientIdKey = null;
@@ -116,10 +116,14 @@ public class AuthentificationService {
 		try {
 			
 
-			if (cloudUser.getIdentifier() == null || cloudUser.getIdentifier().getSecret() == null)	{
+			if (!cloudUser.getIsRegistered())	{
 				return null;
 			}
 			
+			ClientIdentifierPojo clientIdentifierPojo = connectionService.getClientIdentifier(cloudUser.getUserName());
+			
+			if (clientIdentifierPojo == null || clientIdentifierPojo.getSecret() == null)
+				return null;
 			
 			// if authed
 			if((String)request.getSession(false).getAttribute("auth") == "true") {
@@ -132,7 +136,7 @@ public class AuthentificationService {
 			String token = SecurityUtils.generateKey();
 			
 			// get x_1 of user
-			byte[] x_1 = SecurityUtils.fromHex(cloudUser.getIdentifier().getSecret());
+			byte[] x_1 = SecurityUtils.fromHex(clientIdentifierPojo.getSecret());
 			
 			// XOR it
 			byte[] alpha = SecurityUtils.xor(SecurityUtils.fromHex(token), x_1);
@@ -150,10 +154,6 @@ public class AuthentificationService {
 			// send to authHandler
 			authentificationHandler.addToWaitList(cloudUser, hashedToeken, qrUtils);
 
-			// FIXME: remove 
-			// errorMsg = "Token: " + token;
-			// errorMsg += "<br> Re Xored: " + SecurityUtils.toHex(SecurityUtils.xor(alpha, x_1));
-			// errorMsg += " --";
 			
 		} catch (NoSuchAlgorithmException e) {
 			LOGGER.error("Could not find algorithm", e.getMessage());
