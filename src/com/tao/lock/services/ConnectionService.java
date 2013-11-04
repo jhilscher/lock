@@ -1,6 +1,9 @@
 package com.tao.lock.services;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.ejb.Stateless;
 import javax.naming.Binding;
@@ -58,7 +61,7 @@ public class ConnectionService {
 	 * @param cId
 	 * @return
 	 */
-	public String registerUser(ClientIdentifierPojo cId) {
+	public Boolean registerUser(ClientIdentifierPojo cId) {
 		try {
 			
 		
@@ -80,12 +83,19 @@ public class ConnectionService {
 		HttpResponse resp = httpClient.execute(post);
 		HttpEntity entity = resp.getEntity();
 		
+		int statusCode = resp.getStatusLine().getStatusCode();
+		
+		LOGGER.debug("registerUser Statuscode: " + statusCode);
+		
+		if(statusCode != 200 && statusCode != 201)
+			return false;
+		
 		String respToString = EntityUtils.toString(entity);
 		
 		LOGGER.info("Response Connection Call: " + respToString);
 		//int statusCode = resp.getStatusLine().getStatusCode();
 		
-		return respToString;
+		return true;
 		
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -95,7 +105,7 @@ public class ConnectionService {
 			e.printStackTrace();
 		}
 		
-		return null;
+		return false;
 	}
 	
 	/**
@@ -109,11 +119,21 @@ public class ConnectionService {
 			httpClient = getHttpClient();
 				
 			HttpGet get = new HttpGet("getuser/" + userName);
-
+	    	get.addHeader("Accept", "application/json");
+			
 			HttpResponse resp = httpClient.execute(get);
 			HttpEntity entity = resp.getEntity();
 			
 			String respToString = EntityUtils.toString(entity);
+
+			
+			int statusCode = resp.getStatusLine().getStatusCode();
+			
+			LOGGER.debug("getClientIdentifier Statuscode: " + statusCode);
+			LOGGER.debug("getClientIdentifier Rsp: " + respToString);
+			
+			if(statusCode != 200 && statusCode != 201)
+				return null;
 			
 			// Build up from JSON.
 			Gson gson = WebService.getGson();
@@ -132,6 +152,120 @@ public class ConnectionService {
 			return null;
 	}
 	
+
+	
+	/**
+	 * 
+	 * @param userName
+	 * @return
+	 */
+	public ClientIdentifierPojo getClientIdentifierByToken(String token) {
+		try {
+			
+			httpClient = getHttpClient();
+				
+			HttpGet get = new HttpGet("getUserToken/" + token);
+	    	get.addHeader("Accept", "application/json");
+			
+			HttpResponse resp = httpClient.execute(get);
+			HttpEntity entity = resp.getEntity();
+			
+			String respToString = EntityUtils.toString(entity);
+
+			
+			int statusCode = resp.getStatusLine().getStatusCode();
+			
+			LOGGER.debug("getClientIdentifier Statuscode: " + statusCode);
+			LOGGER.debug("getClientIdentifier Rsp: " + respToString);
+			
+			if(statusCode != 200 && statusCode != 201)
+				return null;
+			
+			// Build up from JSON.
+			Gson gson = WebService.getGson();
+			ClientIdentifierPojo json = gson.fromJson(respToString, ClientIdentifierPojo.class);
+			
+			return json;
+			
+			} catch (ParseException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (HttpDestinationException e) {
+				e.printStackTrace();
+			}
+			
+			return null;
+	}
+	
+	
+	/**
+	 * 
+	 * @param userName
+	 * @return
+	 */
+	public String requestToken(String userName) {
+		try {
+			
+			httpClient = getHttpClient();
+				
+			HttpGet get = new HttpGet("getToken/" + userName);
+
+			HttpResponse resp = httpClient.execute(get);
+			HttpEntity entity = resp.getEntity();
+			
+			String respToString = EntityUtils.toString(entity);
+			int statusCode = resp.getStatusLine().getStatusCode();
+			
+			LOGGER.debug("getClientIdentifier Statuscode: " + statusCode);
+			
+			if(statusCode != 200 && statusCode != 201)
+				return null;
+
+			return respToString;
+			
+			} catch (ParseException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (HttpDestinationException e) {
+				e.printStackTrace();
+			}
+			
+			return null;
+	}
+	
+	// "validateToken/{userName}/{token}/{timestamp}"
+	public String validateToken(String userName, String token, String timestamp) {
+		try {
+			
+			httpClient = getHttpClient();
+				
+			HttpGet get = new HttpGet("validateToken/" + userName + "/" + token + "/" + timestamp);
+
+			HttpResponse resp = httpClient.execute(get);
+			HttpEntity entity = resp.getEntity();
+			
+			String respToString = EntityUtils.toString(entity);
+			int statusCode = resp.getStatusLine().getStatusCode();
+			
+			LOGGER.debug("validateToken Statuscode: " + statusCode);
+			
+			if(statusCode != 200 && statusCode != 201)
+				return null;
+
+			return respToString;
+			
+			} catch (ParseException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (HttpDestinationException e) {
+				e.printStackTrace();
+			}
+			
+			return null;
+	}
 
 	public String updateClientIdentifier(ClientIdentifierPojo cId) {
 		try {
@@ -157,7 +291,12 @@ public class ConnectionService {
 			String respToString = EntityUtils.toString(entity);
 			
 			LOGGER.info("Response Connection Call: " + respToString);
-			//int statusCode = resp.getStatusLine().getStatusCode();
+			int statusCode = resp.getStatusLine().getStatusCode();
+			
+			LOGGER.debug("updateClientIdentifier Statuscode: " + statusCode);
+			
+			if(statusCode != 200 && statusCode != 201)
+				return null;
 			
 			return respToString;
 		
@@ -178,7 +317,7 @@ public class ConnectionService {
 	 * @param userName
 	 * @return
 	 */
-	public Boolean DeleteClientIdentifier(String userName) {
+	public Boolean deleteClientIdentifier(String userName) {
 		
 		try {
 			
@@ -201,7 +340,12 @@ public class ConnectionService {
 			
 			String respToString = EntityUtils.toString(entity);
 
-			//int statusCode = resp.getStatusLine().getStatusCode();
+			int statusCode = resp.getStatusLine().getStatusCode();
+			
+			LOGGER.debug("DeleteClientIdentifier Statuscode: " + statusCode);
+			
+			if(statusCode != 200 && statusCode != 201)
+				return null;
 			
 			return true;
 			

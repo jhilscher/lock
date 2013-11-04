@@ -34,8 +34,10 @@
         <exception-type>com.sun.faces.context.FacesFileNotFoundException</exception-type>
         <location>/notFound.xhtml</location>
   </error-page>
-
-  
+   <error-page>
+        <exception-type>javax.ejb.EJBAccessException</exception-type>
+          <location>/unauthorized.xhtml</location>
+  </error-page>
   <!-- FILTER -->
   <filter>
       <filter-name>restricted</filter-name>

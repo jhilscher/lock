@@ -36,11 +36,6 @@ public class AuthentificationService {
 	
 	private static final int BYTE_SIZE = 64;
 	
-	@EJB
-	private RegistrationHandler registrationHandler;
-	
-	@EJB
-	private AuthentificationHandler authentificationHandler;
 	
 	@EJB
 	private ConnectionService connectionService;
@@ -81,14 +76,13 @@ public class AuthentificationService {
 					ClientIdentifierPojo id1 = new ClientIdentifierPojo();
 					id1.setSalt(SecurityUtils.toHex(salt));
 					id1.setHashedClientId(hashedValue);
-					id1.setCreated(new Date());
 					id1.setUserName(cloudUser.getUserName());
 					
 					// set registered flag
 					cloudUser.setIsRegistered(false);
 
 					// TODO: Test later
-					registrationHandler.addToWaitList(id1, clientIdKey, qrUtils);
+					RegistrationHandler.addToWaitList(id1, clientIdKey, qrUtils);
 					
 					// tell gc to remove secret
 					clientIdKey = null;
@@ -144,22 +138,31 @@ public class AuthentificationService {
 			// new Date
 			Date t1 = new Date();
 			
+			// FIXME remove test integration
+			String testToken = connectionService.requestToken(cloudUser.getUserName());
+			
+			
 			//                                                        v Time in milliseconds
-			url = qrUtils.renderQR(SecurityUtils.toHex(alpha) + "#" + t1.getTime());
+			//url = qrUtils.renderQR(SecurityUtils.toHex(alpha) + "#" + t1.getTime());
+			url = qrUtils.renderQR(testToken);
 			
 			// hashed token
-			String hashedToeken =  SecurityUtils.pbkdf2(token.toCharArray(), (String.valueOf(t1.getTime())).getBytes(), ITERATIONS, BYTE_SIZE);
+			//String hashedToken =  SecurityUtils.pbkdf2(token.toCharArray(), (String.valueOf(t1.getTime())).getBytes(), ITERATIONS, BYTE_SIZE);
 	
+
+			LOGGER.info("TestToken: " + testToken);
+			//LOGGER.info("hashedToken: " + hashedToken);
 			
 			// send to authHandler
-			authentificationHandler.addToWaitList(cloudUser, hashedToeken, qrUtils);
-
+			//AuthentificationHandler.addToWaitList(cloudUser, hashedToken, qrUtils);
+			
+			AuthentificationHandler.addToWaitList(cloudUser, cloudUser.getUserName(), qrUtils);
+			
+			
 			
 		} catch (NoSuchAlgorithmException e) {
 			LOGGER.error("Could not find algorithm", e.getMessage());
-		} catch (InvalidKeySpecException e) {
-			LOGGER.error("InvalidKeySpecException", e.getMessage());
-		}  
+		}
 
 		return url;
 	}

@@ -1,7 +1,5 @@
 package com.tao.lock.rest.json;
 
-import java.util.Date;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.gson.annotations.Expose;
@@ -14,6 +12,7 @@ import com.google.gson.annotations.Expose;
 @XmlRootElement
 public class ClientIdentifierPojo {
 
+	
 	@Expose
     private String userName;
     
@@ -37,11 +36,11 @@ public class ClientIdentifierPojo {
     @Expose
     private String hashedClientId;
 
-    @Expose
-    private Date created;
-
-    @Expose
-    private Date loginAttempt;
+//    @Expose
+//    private Date created;
+//
+//    @Expose
+//    private Date loginAttempt;
 
 	public String getUserName() {
 		return userName;
@@ -75,23 +74,37 @@ public class ClientIdentifierPojo {
 		this.hashedClientId = hashedClientId;
 	}
 
-	public Date getCreated() {
-		return created;
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((hashedClientId == null) ? 0 : hashedClientId.hashCode());
+		result = prime * result
+				+ ((userName == null) ? 0 : userName.hashCode());
+		return result;
 	}
 
-	public void setCreated(Date created) {
-		this.created = created;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ClientIdentifierPojo other = (ClientIdentifierPojo) obj;
+		if (hashedClientId == null) {
+			if (other.hashedClientId != null)
+				return false;
+		} else if (!hashedClientId.equals(other.hashedClientId))
+			return false;
+		if (userName == null) {
+			if (other.userName != null)
+				return false;
+		} else if (!userName.equals(other.userName))
+			return false;
+		return true;
 	}
 
-	public Date getLoginAttempt() {
-		return loginAttempt;
-	}
-
-	public void setLoginAttempt(Date loginAttempt) {
-		this.loginAttempt = loginAttempt;
-	}
-    
-	
-	
-    
 }

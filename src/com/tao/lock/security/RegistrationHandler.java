@@ -32,7 +32,7 @@ public class RegistrationHandler {
 		userMap.put(clientIdKey, clientIdentifierPojo);
 		
 		// kills the user after 2mins
-		 TimerTask timerTask = new TimerTask() {
+		TimerTask timerTask = new TimerTask() {
 
 	            @Override
 	            public void run() {

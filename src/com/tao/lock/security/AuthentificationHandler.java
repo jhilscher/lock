@@ -1,14 +1,9 @@
 package com.tao.lock.security;
 
 import java.util.HashMap;
-import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
-
-
-
-
-
 
 import javax.inject.Singleton;
 
@@ -39,9 +34,9 @@ public class AuthentificationHandler {
 	 * @param token		Hashed Token
 	 * @param qrUtils
 	 */
-	public static void addToWaitList(final CloudUser user, final String token, final QRUtils qrUtils) {
+	public static void addToWaitList(final CloudUser user, final String userName, final QRUtils qrUtils) {
 		
-		userMap.put(token, user);
+		userMap.put(userName, user);
 		
 		// kills the user after 2mins
 		 TimerTask timerTask = new TimerTask() {
@@ -49,7 +44,7 @@ public class AuthentificationHandler {
 	            @Override
 	            public void run() {
 	            	user.setSession(null);
-	            	userMap.remove(token);
+	            	userMap.remove(userName);
 	            	qrUtils.deleteFile();
 	            }
 	        };
@@ -60,11 +55,13 @@ public class AuthentificationHandler {
 		
 	}
 	
-	public static CloudUser tryToGetUserToAuth(String token) {
+	public static CloudUser tryToGetUserToAuth(String userName) {
 		
-		CloudUser user = userMap.get(token);
-		userMap.remove(token);
+		CloudUser user = userMap.get(userName);
+		userMap.remove(userName);
 		return user;
 	}
+	
+
 	
 }

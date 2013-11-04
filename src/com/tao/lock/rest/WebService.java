@@ -3,7 +3,6 @@ package com.tao.lock.rest;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.security.spec.InvalidKeySpecException;
-import java.util.Date;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.security.PermitAll;
@@ -30,8 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.sap.cloud.security.oauth2.OAuthAuthorization;
-import com.sap.cloud.security.oauth2.OAuthSystemException;
+import com.google.gson.JsonObject;
 import com.tao.lock.entities.CloudUser;
 import com.tao.lock.rest.json.AuthentificationJSON;
 import com.tao.lock.rest.json.ClientIdentifierPojo;
@@ -71,9 +69,6 @@ import com.tao.lock.utils.Roles;
 		
 		@EJB
 		private RegistrationHandler registrationHandler;
-
-		@EJB
-		private AuthentificationHandler authentificationHandler;
 		
 		@EJB
 		private AuthentificationService authentificationService;
@@ -85,7 +80,7 @@ import com.tao.lock.utils.Roles;
 		 * This builder will only include fields with @Expose annotation.
 		 * @return Gson
 		 */
-		public static Gson getGson () {
+		public static Gson getGson () {														
 			return new GsonBuilder().excludeFieldsWithoutExposeAnnotation().create();
 		}
 		
@@ -107,7 +102,7 @@ import com.tao.lock.utils.Roles;
 	    }
 	    
 	    /**
-	     * 
+	     * Interface for polling.
 	     * @return
 	     */
 	    @POST
@@ -137,43 +132,41 @@ import com.tao.lock.utils.Roles;
 	    public Response auth(AuthentificationJSON authJSON) {
 	    	String r1 = authJSON.getX1();
 	    	
-	    	//lookup
-	    	CloudUser user = authentificationHandler.tryToGetUserToAuth(r1);
+	    	LOGGER.info("Auth Webservice token: " +r1);
+	    		    	
+	    	ClientIdentifierPojo clientIdentifierPojo = connectionService.getClientIdentifierByToken(r1);
 	    	
+	    	CloudUser user = AuthentificationHandler.tryToGetUserToAuth(clientIdentifierPojo.getUserName());
 	    	
-	    	if (user == null)
+	    	if (user == null) {
+	    		LOGGER.info("401: user is not found");
 	    		return Response.status(Response.Status.UNAUTHORIZED).build();
-	    	
-	    	
-	    	ClientIdentifierPojo cId = connectionService.getClientIdentifier(user.getUserName());
-	    	if (cId == null)
-	    		return Response.status(Response.Status.UNAUTHORIZED).build();
-	    	
+	    	}
 	    	
     		boolean authed = false;
 	    	
-    		try {
-				authed = SecurityUtils.validateKey(authJSON.getClientIdKey().toCharArray(), cId.getHashedClientId(),  cId.getSalt());
-			} catch (NoSuchAlgorithmException e) {
-				LOGGER.error(e.getMessage());
-			} catch (InvalidKeySpecException e) {
-				LOGGER.error(e.getMessage());
-			}
+    		String resp = connectionService.validateToken(user.getUserName(), r1, authJSON.getTimeStamp());
     		
-    		if (!authed)
+    		// remove potential " from the string
+    		resp = resp.replace("\"", "");
+    		authed = resp.toUpperCase().equals(user.getUserName().toUpperCase());
+
+    		if (!authed) {
+    			LOGGER.info("401: user is not auted: " + resp + " -- " + user.toString());
     			return Response.status(Response.Status.UNAUTHORIZED).entity("key wrong?").build();	
+    		}
     		
-    		// FIXME: Give User Auth?! 
 	    	HttpSession session = user.getSession();
-    		if(session == null)
+    		if(session == null) {
+    			LOGGER.info("401: session not found");
     			return Response.status(Response.Status.UNAUTHORIZED).build();
-    		
+    		}
+    		// FIXME: Give User Auth?! 
     		// Add to session
     		user.getSession().setAttribute("auth", "true");
     		
     		// Update login attempt
-    		cId.setLoginAttempt(new Date());
-			connectionService.updateClientIdentifier(cId);
+			//connectionService.updateClientIdentifier(cId);
     		
     		return Response.status(Response.Status.CREATED).entity("success").build();
 	    }
@@ -219,7 +212,9 @@ import com.tao.lock.utils.Roles;
 	    	
 	    	// add x_1 to the user
 	    	clientIdentifierPojo.setSecret(registrationJSON.getX1());
-	    	connectionService.registerUser(clientIdentifierPojo);
+	    	
+	    	if(!connectionService.registerUser(clientIdentifierPojo))
+	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
 	    	
 	    	// save user with identifier to db
 	    	user.setIsRegistered(true);
@@ -243,6 +238,11 @@ import com.tao.lock.utils.Roles;
 	    	return getGson().toJson(userService.getAllUsers());
 	    }
 	    
+	    /**
+	     * 
+	     * @param id
+	     * @return
+	     */
 	    @POST
 	    @Path("/removeclientidfromuser")
 	    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -255,19 +255,30 @@ import com.tao.lock.utils.Roles;
 	    		Response.status(Response.Status.NO_CONTENT).entity("user not found").build();
 	    	
 	    	user.setIsRegistered(false);
-	    	connectionService.DeleteClientIdentifier(user.getUserName());
+	    	connectionService.deleteClientIdentifier(user.getUserName());
 	    	userService.update(user);
 	    	
 	    	return Response.status(Response.Status.CREATED).entity("success").build();
 	    	
 	    }
 	    
+	    /**
+	     * Gets the current user.
+	     * @return
+	     */
 	    @GET
 	    @Path("/getcurrentuser")
 	    @RolesAllowed(Roles.EVERYONE)
 	    @Produces(MediaType.APPLICATION_JSON)
 	    public String getCurrentUser() {
-	    	return getGson().toJson(userService.getCloudUser(request));
+	    	CloudUser user = userService.getCloudUser(request);
+	    	JsonObject jsonObject = new JsonObject();
+	    	jsonObject.addProperty("userName", user.getUserName());
+	    	
+	    	HttpSession session = request.getSession();
+	    	String auth = (String) session.getAttribute("auth");
+	    	jsonObject.addProperty("isLoggedIn", auth);
+	    	return jsonObject.toString();
 	    }
 	    
 	    @GET
@@ -300,40 +311,22 @@ import com.tao.lock.utils.Roles;
 	    	
 	    	CloudUser user = userService.getCloudUser(request);
 	    	if (user == null)
-	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
+	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error on user").build();
 	    	
 	    	String url = authentificationService.authentificateUser(request, context, user);
 	    	if (url == null)
-	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
+	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error on auth").build();
 	    	
 	    	String filename = QRUtils.getFilenameFromUrl(url);
 	    	
 	    	// add filename to session
 	    	request.getSession().setAttribute("qrcode", filename);
 	    	
-	    	LOGGER.info("Generated QR-Code with filename: + filename");
-	    	
 	    	return Response.ok().entity(url).build();
 	    	
 	    }
 	    
-	    
-	    // FIXME: remove
-	    
-	    @GET
-	    @Path("/oauth")
-	    public Response oAuth() throws OAuthSystemException {
-	    	OAuthAuthorization authAuthorization = OAuthAuthorization.getOAuthAuthorizationService();
-		    if(!authAuthorization.isAuthorized(request, "access")){
-		    	 return Response.ok().entity("not authorized").build();
-		    } 
-		    
 
-		    return Response.ok().entity("fail").build();
-		    
-	    }
-	    
-	    
 	    // FIXME: remove
 	    @GET
 	    @Path("/ping")
@@ -341,8 +334,6 @@ import com.tao.lock.utils.Roles;
 	   
 	    	String response = connectionService.sendGetRequest();
 
-	    	
-	    	
 	    	if (response != null)
 	    		return Response.ok().entity(response).build();
 	    	else 
