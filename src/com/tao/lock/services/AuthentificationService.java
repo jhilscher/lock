@@ -1,7 +1,6 @@
 package com.tao.lock.services;
 
 import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
 import java.util.Date;
 
 import javax.annotation.security.RolesAllowed;
@@ -32,11 +31,7 @@ public class AuthentificationService {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(AuthentificationService.class);
 	
-	private static final int ITERATIONS = 1000;
-	
-	private static final int BYTE_SIZE = 64;
-	
-	
+
 	@EJB
 	private ConnectionService connectionService;
 	
@@ -45,7 +40,6 @@ public class AuthentificationService {
 	 * @param request	HttpServletRequest
 	 * @return URL of the QR-Code, or null
 	 */
-	@SuppressWarnings("static-access")
 	@RolesAllowed(Roles.MANAGER)
 	public String registerUser(HttpServletRequest request, ServletContext context, CloudUser cloudUser) {
 
@@ -53,45 +47,29 @@ public class AuthentificationService {
 					return null;
 				}
 		
+				// QR-Code
 				String url = null;
 				QRUtils qrUtils = new QRUtils();
 				qrUtils.setContext(context);	
 				
-				try {
-					
-					// attach session to this user
-					cloudUser.setSession(request.getSession());
-					
-					// generate a clientIdKey (ID_A)
-					String clientIdKey = SecurityUtils.generateKey();
-					
-					url = qrUtils.renderQR(clientIdKey);
+				// Build Pojo
+				ClientIdentifierPojo id1 = new ClientIdentifierPojo();
+				id1.setUserName(cloudUser.getUserName());
 
-					byte[] salt = SecurityUtils.generateSalt(64);
-					
-					// securely hash the clientidkey
-					String hashedValue = SecurityUtils.pbkdf2(clientIdKey.toCharArray(), salt, ITERATIONS, BYTE_SIZE);
-					
-					// add to pojo
-					ClientIdentifierPojo id1 = new ClientIdentifierPojo();
-					id1.setSalt(SecurityUtils.toHex(salt));
-					id1.setHashedClientId(hashedValue);
-					id1.setUserName(cloudUser.getUserName());
-					
-					// set registered flag
-					cloudUser.setIsRegistered(false);
-
-					// TODO: Test later
-					RegistrationHandler.addToWaitList(id1, clientIdKey, qrUtils);
-					
-					// tell gc to remove secret
-					clientIdKey = null;
-					
-				} catch (NoSuchAlgorithmException e) {
-					LOGGER.error("Could not find algorithm", e.getMessage());
-				}  catch (InvalidKeySpecException e) {
-					LOGGER.error("Exception while hashing", e.getMessage());
-				} 
+				// Call to SCC
+				String ID_A = connectionService.registerRequest(id1);
+				
+				// attach session to this user
+				cloudUser.setSession(request.getSession());
+				
+				// set registered flag
+				cloudUser.setIsRegistered(false);
+				
+				// TODO: Test later
+				RegistrationHandler.addToWaitList(id1, ID_A, qrUtils);
+				
+				// Get url
+				url = qrUtils.renderQR(ID_A);
 
 				return url;
 	}

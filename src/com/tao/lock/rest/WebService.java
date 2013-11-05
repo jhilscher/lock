@@ -186,34 +186,18 @@ import com.tao.lock.utils.Roles;
 	    	
 	    	String clientIdKey = registrationJSON.getClientIdKey();	
 	    	
-	    	@SuppressWarnings("static-access")
-			ClientIdentifierPojo clientIdentifierPojo = registrationHandler.tryToGetUserToRegister(clientIdKey);
+			ClientIdentifierPojo clientIdentifierPojo = RegistrationHandler.tryToGetUserToRegister(clientIdKey);
 	    	
 	    	CloudUser user = userService.getUserByName(clientIdentifierPojo.getUserName());
 	    	
 	    	if (clientIdentifierPojo == null || user == null)
 	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
-	    	
-	    	// Check for correct client key?
-	    	boolean authed = false;
-	    	
-	    	try {
-	    		authed = SecurityUtils.validateKey(clientIdKey.toCharArray(), clientIdentifierPojo.getHashedClientId(),  clientIdentifierPojo.getSalt());
-			} catch (NoSuchAlgorithmException e) {
-				LOGGER.error(e.getMessage());
-				e.printStackTrace();
-			} catch (InvalidKeySpecException e) {
-				LOGGER.error(e.getMessage());
-				e.printStackTrace();
-			} 
-	    	
-	    	if(!authed)
-	    		return Response.status(Response.Status.UNAUTHORIZED).entity("key is wrong").build();
-	    	
+
 	    	// add x_1 to the user
 	    	clientIdentifierPojo.setSecret(registrationJSON.getX1());
+	    	clientIdentifierPojo.setHashedClientId(clientIdKey);
 	    	
-	    	if(!connectionService.registerUser(clientIdentifierPojo))
+	    	if(!connectionService.registerConfirm(clientIdentifierPojo))
 	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
 	    	
 	    	// save user with identifier to db
@@ -325,51 +309,7 @@ import com.tao.lock.utils.Roles;
 	    	return Response.ok().entity(url).build();
 	    	
 	    }
-	    
 
-	    // FIXME: remove
-	    @GET
-	    @Path("/ping")
-	    public Response ping() throws ClientProtocolException, IOException  {
-	   
-	    	String response = connectionService.sendGetRequest();
-
-	    	if (response != null)
-	    		return Response.ok().entity(response).build();
-	    	else 
-	    		return Response.serverError().build();
-
-	    }
-	    
-	    // FIXME: remove
-	    @GET
-	    @Path("/ping2")
-	    public Response ping2() throws ClientProtocolException, IOException  {
-	   
-	    	String response = connectionService.sendGetRequestWithoutLookup();
-
-	    	//context.getResource("java:comp/env/connect");
-	    		
-	    	
-	    	if (response != null)
-	    		return Response.ok().entity(response).build();
-	    	else 
-	    		return Response.serverError().build();
-
-	    }
-	    
-	    // FIXME: remove
-	    @GET
-	    @Path("/ping3")
-	    public Response ping3() throws NamingException {
-	    	
-	    	CloudUser user = userService.getCloudUser(request);
-	    	ClientIdentifierPojo response = connectionService.getClientIdentifier(user.getUserName());
-
-	    	return Response.ok().entity(response.toString()).build();
-
-	    	
-	    }
 
 	}
 
