@@ -1,14 +1,9 @@
 package com.tao.lock.rest;
 
-import java.io.IOException;
-import java.security.NoSuchAlgorithmException;
-import java.security.spec.InvalidKeySpecException;
-
 import javax.annotation.ManagedBean;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
-import javax.naming.NamingException;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -23,7 +18,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.apache.http.client.ClientProtocolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,7 +30,6 @@ import com.tao.lock.rest.json.ClientIdentifierPojo;
 import com.tao.lock.rest.json.RegistrationJSON;
 import com.tao.lock.security.AuthentificationHandler;
 import com.tao.lock.security.RegistrationHandler;
-import com.tao.lock.security.SecurityUtils;
 import com.tao.lock.services.AuthentificationService;
 import com.tao.lock.services.ConnectionService;
 import com.tao.lock.services.UserService;
@@ -66,10 +59,7 @@ import com.tao.lock.utils.Roles;
 		
 		@EJB
 		private UserService userService;
-		
-		@EJB
-		private RegistrationHandler registrationHandler;
-		
+				
 		@EJB
 		private AuthentificationService authentificationService;
    
@@ -130,29 +120,23 @@ import com.tao.lock.utils.Roles;
 	    @Consumes(MediaType.APPLICATION_JSON)
 	    @PermitAll 
 	    public Response auth(AuthentificationJSON authJSON) {
-	    	String r1 = authJSON.getX1();
-	    	
-	    	LOGGER.info("Auth Webservice token: " +r1);
-	    		    	
-	    	ClientIdentifierPojo clientIdentifierPojo = connectionService.getClientIdentifierByToken(r1);
-	    	
-	    	CloudUser user = AuthentificationHandler.tryToGetUserToAuth(clientIdentifierPojo.getUserName());
-	    	
-	    	if (user == null) {
-	    		LOGGER.info("401: user is not found");
-	    		return Response.status(Response.Status.UNAUTHORIZED).build();
-	    	}
-	    	
-    		boolean authed = false;
-	    	
-    		String resp = connectionService.validateToken(user.getUserName(), r1, authJSON.getTimeStamp());
+
+    		// resp should be the user name
+    		String resp = connectionService.validateToken(authJSON.getClientIdKey(), authJSON.getX1());
+    		
+    		if (resp == null) {
+    			LOGGER.info("401: user not found: ");
+    			return Response.status(Response.Status.UNAUTHORIZED).entity("key wrong?").build();	
+    		}
     		
     		// remove potential " from the string
     		resp = resp.replace("\"", "");
-    		authed = resp.toUpperCase().equals(user.getUserName().toUpperCase());
+    		
+    		CloudUser user = AuthentificationHandler.tryToGetUserToAuth(resp);
+    		
 
-    		if (!authed) {
-    			LOGGER.info("401: user is not auted: " + resp + " -- " + user.toString());
+    		if (user == null) {
+    			LOGGER.info("401: user is not auted.");
     			return Response.status(Response.Status.UNAUTHORIZED).entity("key wrong?").build();	
     		}
     		
@@ -164,10 +148,7 @@ import com.tao.lock.utils.Roles;
     		// FIXME: Give User Auth?! 
     		// Add to session
     		user.getSession().setAttribute("auth", "true");
-    		
-    		// Update login attempt
-			//connectionService.updateClientIdentifier(cId);
-    		
+
     		return Response.status(Response.Status.CREATED).entity("success").build();
 	    }
 	    

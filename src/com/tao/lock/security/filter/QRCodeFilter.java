@@ -47,23 +47,20 @@ public class QRCodeFilter implements Filter {
 			// get session
 			HttpSession session = req.getSession();
 			
-			// get url
+			// get the url of the resource
 			String url = req.getRequestURI();
 			
-			LOGGER.info("Someone is trying to access a resouce. URL: " + url);
-			
+			// get the QR-Code filename
 			String filename = QRUtils.getFilenameFromUrl(url);
 			
-
 			if (session.getAttribute(QRCODE_KEY) == null  
 					|| session.getAttribute(QRCODE_KEY).toString() == null)
-				res.sendError(401);
+				res.sendError(401); // deny access, if there's no qrcode-key in the session
 			else if (session.getAttribute(QRCODE_KEY).toString().equals(filename))
-				chain.doFilter(req, res);
+				chain.doFilter(req, res); // grant access, if there is a valid code
 			else {
-				res.sendError(401);
+				res.sendError(401); // deny for anything other
 			}
-			
 			
 		}
 

@@ -52,6 +52,7 @@ public class AuthentificationService {
 				QRUtils qrUtils = new QRUtils();
 				qrUtils.setContext(context);	
 				
+				
 				// Build Pojo
 				ClientIdentifierPojo id1 = new ClientIdentifierPojo();
 				id1.setUserName(cloudUser.getUserName());
@@ -74,6 +75,15 @@ public class AuthentificationService {
 				return url;
 	}
 	
+	/**
+	 * Request Auth for a user.
+	 * Requests Token from SCC.
+	 * 
+	 * @param request
+	 * @param context
+	 * @param cloudUser
+	 * @return URL of the image with the qr-code.
+	 */
 	@RolesAllowed(Roles.MANAGER)
 	public String authentificateUser(HttpServletRequest request, ServletContext context, CloudUser cloudUser) {
 
@@ -85,62 +95,27 @@ public class AuthentificationService {
 		
 		String url = null;
 		
-		try {
-			
-
-			if (!cloudUser.getIsRegistered())	{
-				return null;
-			}
-			
-			ClientIdentifierPojo clientIdentifierPojo = connectionService.getClientIdentifier(cloudUser.getUserName());
-			
-			if (clientIdentifierPojo == null || clientIdentifierPojo.getSecret() == null)
-				return null;
-			
-			// if authed
-			if((String)request.getSession(false).getAttribute("auth") == "true") {
-				return null;
-			}
-			
-			cloudUser.setSession(request.getSession(false));
-			
-			// generate a token
-			String token = SecurityUtils.generateKey();
-			
-			// get x_1 of user
-			byte[] x_1 = SecurityUtils.fromHex(clientIdentifierPojo.getSecret());
-			
-			// XOR it
-			byte[] alpha = SecurityUtils.xor(SecurityUtils.fromHex(token), x_1);
-			
-			// new Date
-			Date t1 = new Date();
-			
-			// FIXME remove test integration
-			String testToken = connectionService.requestToken(cloudUser.getUserName());
-			
-			
-			//                                                        v Time in milliseconds
-			//url = qrUtils.renderQR(SecurityUtils.toHex(alpha) + "#" + t1.getTime());
-			url = qrUtils.renderQR(testToken);
-			
-			// hashed token
-			//String hashedToken =  SecurityUtils.pbkdf2(token.toCharArray(), (String.valueOf(t1.getTime())).getBytes(), ITERATIONS, BYTE_SIZE);
-	
-
-			LOGGER.info("TestToken: " + testToken);
-			//LOGGER.info("hashedToken: " + hashedToken);
-			
-			// send to authHandler
-			//AuthentificationHandler.addToWaitList(cloudUser, hashedToken, qrUtils);
-			
-			AuthentificationHandler.addToWaitList(cloudUser, cloudUser.getUserName(), qrUtils);
-			
-			
-			
-		} catch (NoSuchAlgorithmException e) {
-			LOGGER.error("Could not find algorithm", e.getMessage());
+		if (!cloudUser.getIsRegistered())	{
+			return null;
 		}
+		
+		
+		// if authed
+		if((String)request.getSession(false).getAttribute("auth") == "true") {
+			return null;
+		}
+		
+		cloudUser.setSession(request.getSession(false));
+		
+		String token = connectionService.requestToken(cloudUser.getUserName());
+
+		url = qrUtils.renderQR(token);
+
+
+		LOGGER.info("TestToken: " + token);
+
+		AuthentificationHandler.addToWaitList(cloudUser, cloudUser.getUserName(), qrUtils);
+			
 
 		return url;
 	}
