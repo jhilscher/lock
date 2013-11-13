@@ -21,7 +21,7 @@ sap.ui.jsview("ui5.Usermgnt", {
 		
 		// TABLE
 		
-		var url = "/lock/api/service/getallusers";
+
 		
 
 		  //Create an instance of the table control
@@ -86,7 +86,7 @@ sap.ui.jsview("ui5.Usermgnt", {
          
          oTable2.addColumn(new sap.ui.table.Column({
           	label: new sap.ui.commons.Label({text: "Last log in"}),
-          	template:  new sap.ui.commons.TextView().bindProperty("text", "identifier/loginAttempt"),
+          	template:  new sap.ui.commons.TextView().bindProperty("text", "lastLogIn"),
           	width: "100px",
     		hAlign: "Center"
           }));
@@ -96,7 +96,7 @@ sap.ui.jsview("ui5.Usermgnt", {
 		
         
         // Load Data
-        oModel2.loadData(url);
+        oModel2.loadData(url_allUsers);
         
         //oModel2.setData({modelData: oController.loadData()});
         

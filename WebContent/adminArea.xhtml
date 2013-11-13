@@ -6,135 +6,6 @@
  
     <h:head>
 		<ui:include src="/include/header.jsf" />
-		<script>
-		
-		
-		$(function () {
-
-		         renderTable();     
-		});	
-					
-		
-		var url = "https://lockd059130trial.hanatrial.ondemand.com/lock/api/service/getallusers";
-		
-		var json;
-		var renderTable = function () {
-			
-			oTable2.setBusy(true);
-			//Bring the table onto the UI 
-		    
-			
-					$.ajax({
-		   	    			type: "GET",
-		   	    			url: url,
-		   	    			success: function (data) {
-		   	    				 json = data;
-		   	    				
-		   	    				 
-		   	    				 
-			   	    			 oModel2.setData({modelData: json});
-			   			         oTable2.setModel(oModel2);
-			   			         oTable2.bindRows("/modelData");
-			
-			   			         //Initially sort the table
-			   			         oTable2.sort(oTable2.getColumns()[0]);
-			
-			   			         oTable2.setBusy(false);
-		   	    				
-		   	    			}
-			   	    	});
-			};	
-		
-			var removeClientId = function (userId) {
-				
-				$.ajax({
-		    			type: "POST",
-		    			url: "https://lockd059130trial.hanatrial.ondemand.com/lock/api/service/removeclientidfromuser",
-		    			data: 'id='+userId,
-		    			complete: function (xhr, statusCode) {
-		    				if(xhr.status == '200' || xhr.status == '201') {
-		    					renderTable();
-		    				} 
-		    				else {
-		    					 sap.ui.commons.MessageBox.alert("Failed to delete mobile Client from user!");
-		    				}
-		    				
-		    			}
-				});
-				
-			};
-		
-			  //Create an instance of the table control
-	         var oTable2 = new sap.ui.table.Table({
-	         	title: "User Management",
-	         	visibleRowCount: 7,
-	         	firstVisibleRow: 3,
-	         	selectionMode: sap.ui.table.SelectionMode.Single,
-	         	navigationMode: sap.ui.table.NavigationMode.Paginator
-	         });
-
-	         //Define the columns and the control templates to be used
-	         oTable2.addColumn(new sap.ui.table.Column({
-	         	label: new sap.ui.commons.Label({text: "UserName"}),
-	         	template: new sap.ui.commons.TextView().bindProperty("text", "userName"),
-	         	sortProperty: "userName",
-	         	filterProperty: "userName",
-	         	width: "100px"
-	         }));
-
-	         oTable2.addColumn(new sap.ui.table.Column({
-	         	label: new sap.ui.commons.Label({text: "eMail"}),
-	         	template: new sap.ui.commons.TextView().bindProperty("text", "email"),
-	         	sortProperty: "email",
-	         	filterProperty: "email",
-	         	width: "100px"
-	         }));
-	         
-	         oTable2.addColumn(new sap.ui.table.Column({
-	         	label: new sap.ui.commons.Label({text: "Account Created At"}),
-	         	template: new sap.ui.commons.TextView().bindProperty("text", "createdAt"),
-	         	sortProperty: "createdAt",
-	         	filterProperty: "createdAt",
-	         	width: "100px",
-	         	hAlign: "Center"
-	         }));
-	         
-	         oTable2.addColumn(new sap.ui.table.Column({
-	        		label: new sap.ui.commons.Label({text: "Mobile Registered?"}),
-	        		template: new sap.ui.commons.CheckBox({
-	        			editable: false
-	        			}).bindProperty("checked", "identifier", function (sValue) { return !!sValue; }),
-	        		sortProperty: "checked",
-	        		filterProperty: "checked",
-	        		width: "50px",
-	        		hAlign: "Center"
-	        	}));
-	         
-	         oTable2.addColumn(new sap.ui.table.Column({
-	         	label: new sap.ui.commons.Label({text: "Remove Mobile"}),
-	         	template: new sap.ui.commons.Button({
-	                text : "remove",
-	                tooltip : "Remove the mobile client from this user.",
-	                press : function(oEvent) {
-	                		var oContext = oEvent.getSource().getBindingContext();  
-	                		removeClientId(oContext.getProperty('id'));
-	                	}
-	                
-	        	}).bindProperty("enabled", "identifier", function (sValue) { return !!sValue; }),
-	         	width: "60px"
-	         }));
-	         
-	         //Create a model and bind the table rows to this model
-	         var oModel2 = new sap.ui.model.json.JSONModel();	
-			
-
-	         oTable2.placeAt("content");
-
-
-            
-	         
-	         
-		</script>
 		
     </h:head>
     
@@ -142,6 +13,11 @@
     	<ui:include src="/include/nav.jsf" />
     	
     	
+    	<form action="#{testBean.getUrl()}">
+    	<INPUT type="submit" value="test" />
+    	</form>
+    	
+
     </h:body>
     
 </html>

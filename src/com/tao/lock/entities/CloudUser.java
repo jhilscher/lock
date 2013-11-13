@@ -71,6 +71,10 @@ public class CloudUser {
     private Date createdAt;
     
 	@Expose
+    @Transient
+    private Date lastLogIn;
+	
+	@Expose
     @Column()
 	private Boolean isRegistered;
 	    
@@ -192,6 +196,14 @@ public class CloudUser {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public Date getLastLogIn() {
+		return lastLogIn;
+	}
+
+	public void setLastLogIn(Date lastLogIn) {
+		this.lastLogIn = lastLogIn;
 	}
 
 

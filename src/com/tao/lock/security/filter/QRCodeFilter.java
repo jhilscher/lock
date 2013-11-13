@@ -32,10 +32,7 @@ public class QRCodeFilter implements Filter {
 		private final String QRCODE_KEY = "qrcode";
 	
 		@Override
-		public void destroy() {
-
-			
-		}
+		public void destroy() {}
 
 		@Override
 		public void doFilter(ServletRequest request, ServletResponse response,
@@ -55,11 +52,11 @@ public class QRCodeFilter implements Filter {
 			
 			if (session.getAttribute(QRCODE_KEY) == null  
 					|| session.getAttribute(QRCODE_KEY).toString() == null)
-				res.sendError(401); // deny access, if there's no qrcode-key in the session
+				res.sendError(403); // deny access, if there's no qrcode-key in the session
 			else if (session.getAttribute(QRCODE_KEY).toString().equals(filename))
 				chain.doFilter(req, res); // grant access, if there is a valid code
 			else {
-				res.sendError(401); // deny for anything other
+				res.sendError(403); // deny for anything other
 			}
 			
 		}

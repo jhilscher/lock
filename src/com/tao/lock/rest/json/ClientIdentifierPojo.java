@@ -1,5 +1,7 @@
 package com.tao.lock.rest.json;
 
+import java.util.Date;
+
 import javax.xml.bind.annotation.XmlRootElement;
 
 import com.google.gson.annotations.Expose;
@@ -36,11 +38,11 @@ public class ClientIdentifierPojo {
     @Expose
     private String hashedClientId;
 
-//    @Expose
-//    private Date created;
-//
-//    @Expose
-//    private Date loginAttempt;
+    @Expose
+    private Date created;
+
+    @Expose
+    private Date loginAttempt;
 
 	public String getUserName() {
 		return userName;
@@ -105,6 +107,22 @@ public class ClientIdentifierPojo {
 		} else if (!userName.equals(other.userName))
 			return false;
 		return true;
+	}
+
+	public Date getCreated() {
+		return created;
+	}
+
+	public void setCreated(Date created) {
+		this.created = created;
+	}
+
+	public Date getLoginAttempt() {
+		return loginAttempt;
+	}
+
+	public void setLoginAttempt(Date loginAttempt) {
+		this.loginAttempt = loginAttempt;
 	}
 
 }

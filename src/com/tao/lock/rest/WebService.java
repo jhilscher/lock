@@ -1,6 +1,9 @@
 package com.tao.lock.rest;
 
+import java.util.List;
+
 import javax.annotation.ManagedBean;
+import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -13,6 +16,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -44,6 +48,7 @@ import com.tao.lock.utils.Roles;
 	 */
 	@ManagedBean
 	@Path("/service")
+	@DenyAll
 	public class WebService {
 
 		private static final Logger LOGGER = LoggerFactory.getLogger(WebService.class);
@@ -84,11 +89,10 @@ import com.tao.lock.utils.Roles;
 	    @RolesAllowed(Roles.MANAGER)
 	    public Response authPolling() {
 	    	
-	    	// FIXME: shitty way to do this.
 	    	if (request.getSession().getAttribute("auth") == "true")
 	    				return Response.ok().build();
 
-	    	return Response.status(Response.Status.UNAUTHORIZED).build();
+	    	return Response.status(Response.Status.FORBIDDEN).build();
 	    }
 	    
 	    /**
@@ -126,7 +130,7 @@ import com.tao.lock.utils.Roles;
     		
     		if (resp == null) {
     			LOGGER.info("401: user not found: ");
-    			return Response.status(Response.Status.UNAUTHORIZED).entity("key wrong?").build();	
+    			return Response.status(Response.Status.FORBIDDEN).entity("key wrong?").build();	
     		}
     		
     		// remove potential " from the string
@@ -137,13 +141,13 @@ import com.tao.lock.utils.Roles;
 
     		if (user == null) {
     			LOGGER.info("401: user is not auted.");
-    			return Response.status(Response.Status.UNAUTHORIZED).entity("key wrong?").build();	
+    			return Response.status(Response.Status.FORBIDDEN).entity("key wrong?").build();	
     		}
     		
 	    	HttpSession session = user.getSession();
     		if(session == null) {
     			LOGGER.info("401: session not found");
-    			return Response.status(Response.Status.UNAUTHORIZED).build();
+    			return Response.status(Response.Status.FORBIDDEN).build();
     		}
     		// FIXME: Give User Auth?! 
     		// Add to session
@@ -172,14 +176,14 @@ import com.tao.lock.utils.Roles;
 	    	CloudUser user = userService.getUserByName(clientIdentifierPojo.getUserName());
 	    	
 	    	if (clientIdentifierPojo == null || user == null)
-	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
+	    		return Response.status(Response.Status.FORBIDDEN).entity("error").build();
 
 	    	// add x_1 to the user
 	    	clientIdentifierPojo.setSecret(registrationJSON.getX1());
 	    	clientIdentifierPojo.setHashedClientId(clientIdKey);
 	    	
 	    	if(!connectionService.registerConfirm(clientIdentifierPojo))
-	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
+	    		return Response.status(Response.Status.FORBIDDEN).entity("error").build();
 	    	
 	    	// save user with identifier to db
 	    	user.setIsRegistered(true);
@@ -200,7 +204,24 @@ import com.tao.lock.utils.Roles;
 	    @Produces(MediaType.APPLICATION_JSON)
 	    @RolesAllowed(Roles.ADMIN)
 	    public String getAllUsers() {
-	    	return getGson().toJson(userService.getAllUsers());
+	    	
+	    	List<CloudUser> users = userService.getAllUsers();
+	    	
+	    	for (CloudUser cUser : users) {
+	    		
+	    		ClientIdentifierPojo pojo = connectionService.getClientIdentifierByUserName(cUser.getUserName());
+	    		
+	    		if (pojo != null) {
+	    			//cUser.setCreatedAt(pojo.getCreated());
+	    			cUser.setLastLogIn(pojo.getLoginAttempt());
+	    			cUser.setIsRegistered(true);
+	    		} else {
+	    			cUser.setIsRegistered(false);
+	    		}
+	    		
+	    	}
+	    	
+	    	return getGson().toJson(users);
 	    }
 	    
 	    /**
@@ -237,11 +258,26 @@ import com.tao.lock.utils.Roles;
 	    @Produces(MediaType.APPLICATION_JSON)
 	    public String getCurrentUser() {
 	    	CloudUser user = userService.getCloudUser(request);
+	    	
+	    	// Sync if registered
+    		ClientIdentifierPojo pojo = connectionService.getClientIdentifierByUserName(user.getUserName());
+    		
+    		if (pojo != null) {
+    			user.setIsRegistered(true);
+    		} else {
+    			user.setIsRegistered(false);
+    		}
+	    	
+    		// save
+    		userService.update(user);
+	    	
+    		// build JSON
 	    	JsonObject jsonObject = new JsonObject();
 	    	jsonObject.addProperty("userName", user.getUserName());
 	    	
 	    	HttpSession session = request.getSession();
-	    	String auth = (String) session.getAttribute("auth");
+	    	String auth = (String) session.getAttribute("auth") == null? "not logged in" : "logged in";
+	    	
 	    	jsonObject.addProperty("isLoggedIn", auth);
 	    	return jsonObject.toString();
 	    }
@@ -254,11 +290,12 @@ import com.tao.lock.utils.Roles;
 	    	CloudUser user = userService.getCloudUser(request);
 	    	
 	    	if (user == null)
-	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
+	    		return Response.status(Response.Status.FORBIDDEN).entity("error").build();
 	    	
 	    	String url = authentificationService.registerUser(request, context, user);
-	    	if (url == null)
-	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
+	    	
+	    	if (url == null || url.isEmpty())
+	    		return Response.status(Response.Status.FORBIDDEN).entity("error").build();
 	    	
 	    	// add filename to session
 	    	request.getSession().setAttribute("qrcode", QRUtils.getFilenameFromUrl(url));
@@ -276,11 +313,11 @@ import com.tao.lock.utils.Roles;
 	    	
 	    	CloudUser user = userService.getCloudUser(request);
 	    	if (user == null)
-	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error on user").build();
+	    		return Response.status(Response.Status.FORBIDDEN).entity("error on user").build();
 	    	
 	    	String url = authentificationService.authentificateUser(request, context, user);
 	    	if (url == null)
-	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error on auth").build();
+	    		return Response.status(Response.Status.FORBIDDEN).entity("error on auth").build();
 	    	
 	    	String filename = QRUtils.getFilenameFromUrl(url);
 	    	
@@ -291,6 +328,33 @@ import com.tao.lock.utils.Roles;
 	    	
 	    }
 
+	    
+	    
+	    /**
+	     * TEST Method for CSRF-Attack.
+	     * @param id
+	     * @return
+	     */
+	    @GET
+	    @Path("/test/{username}")
+	    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	    @RolesAllowed(Roles.ADMIN)
+	    public Response csrfTest(@PathParam("username") String userName) {
+	    	
+	    	CloudUser user = userService.getUserByName(userName);
+	    	
+	    	//org.owasp.csrfguard.CsrfGuardServletContextListener 
+	    	
+	    	if (user == null)
+	    		Response.status(Response.Status.NO_CONTENT).entity("user not found").build();
+	    	
+	    	user.setIsRegistered(false);
+	    	connectionService.deleteClientIdentifier(user.getUserName());
+	    	userService.update(user);
+	    	
+	    	return Response.status(Response.Status.CREATED).entity("success").build();
+	    	
+	    }
 
 	}
 

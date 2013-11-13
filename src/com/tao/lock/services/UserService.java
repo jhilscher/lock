@@ -2,6 +2,7 @@ package com.tao.lock.services;
 
 import java.util.List;
 
+import javax.annotation.security.DenyAll;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -27,6 +28,7 @@ import com.tao.lock.utils.Roles;
  * @author Joerg Hilscher
  *
  */
+@DenyAll
 @Stateless
 @TransactionAttribute(TransactionAttributeType.REQUIRED)
 public class UserService {
@@ -48,6 +50,8 @@ public class UserService {
 		return userDao.getAllUsers();
 	}
 	
+	// WebService#register needs this -> PermitAll
+	@PermitAll
 	public CloudUser getUserByName(String userName) {
 		return userDao.getUserByUserName(userName);
 	}
@@ -89,12 +93,6 @@ public class UserService {
 		if (request == null)
 			return null;
 		
-		HttpSession session = request.getSession();
-		
-		// if user is stored in the session, return this
-		//if (session.getAttribute("c_user") != null && session.getAttribute("c_user") instanceof CloudUser)
-		//	return (CloudUser) session.getAttribute("c_user");
-		
 		User ssoUser = null;
 		
 		try {
@@ -110,7 +108,6 @@ public class UserService {
 		CloudUser cloudUser = getUserByName(ssoUser.getName());
 		
 		if (cloudUser != null) {
-			//session.setAttribute("c_user", cloudUser);
 			return cloudUser;
 		}
 		
@@ -129,6 +126,7 @@ public class UserService {
 		return addUser(cloudUser);
 	}
 
+	@RolesAllowed(Roles.ADMIN)
 	public CloudUser getUserById(long id) {
 		return userDao.getUserById(id);
 	}

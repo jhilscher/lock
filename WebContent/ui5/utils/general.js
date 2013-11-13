@@ -30,15 +30,14 @@
 			    showInspectorTool : false,
 			    showSearchTool : false,
 			    showLogoutButton : true,
-			    headerItems : [ new sap.ui.commons.TextView({
-			        text : "{/userName}"
-			    }),
-			    new sap.ui.commons.TextView().bindProperty("text", "{/isLoggedIn}", function(sValue) {
-			    	if (sValue == null || sValue == "false")
-			    		return "not logged in";
-			    	else
-			    		return "logged in";
-			    })],
+			    headerItems : [ 
+			                   new sap.ui.commons.TextView({
+							        text : "{/userName}"
+							    }),
+						    	new sap.ui.commons.TextView({
+						    		text: "{/isLoggedIn}"
+				    			})
+			    ],
 			    
 			    
 				logout: function(){
@@ -53,7 +52,7 @@
 
 		// to get the current user
 		function loadUserData() {
-			userDataModel.loadData("/lock/api/service/getcurrentuser");
+			userDataModel.loadData(url_currentUser);
 			sap.ui.getCore().setModel(userDataModel);
 		}
 

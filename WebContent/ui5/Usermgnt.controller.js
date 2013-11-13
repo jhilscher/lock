@@ -20,13 +20,12 @@ sap.ui.controller( "ui5.Usermgnt" ,{
 	
 	removeClientId: function (userId, model, table) {
 		
-		var url = "/lock/api/service/getallusers";
 		table.setBusy(true);
 		
 		$.ajax({
     			type: "POST",
-    			url: "/lock/api/service/removeclientidfromuser",
-    			data: 'id='+userId,
+    			url: url_removeUser,
+    			data: 'id='+userId + '&' + csrfToken,
     			complete: function (xhr, statusCode) {
     				if(xhr.status == '200' || xhr.status == '201') {
     					//model.refresh(true);

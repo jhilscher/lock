@@ -6,13 +6,14 @@ sap.ui.controller( "ui5.Register" ,{
 
 	isUserRegistered: function () {
 		
-		var url = "/lock/api/service/regpolling";
+		var url = url_regPolling;
 		
 		var isRegistered = false;
 		
 		$.ajax({
    			type: "POST",
    			url: url,
+   			data: csrfToken,
    			async: false,
    			complete: function (xhr, statusCode) {
    				if(xhr.status == '200') {
@@ -28,7 +29,7 @@ sap.ui.controller( "ui5.Register" ,{
 	
 	showRegisterQR: function() {
 		
-		var url = "/lock/api/service/getregisterqr";
+		var url = url_regQR;
 		
 		var qrUrl = "";
 		

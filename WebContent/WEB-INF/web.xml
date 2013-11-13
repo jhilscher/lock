@@ -115,13 +115,37 @@
       <url-pattern>/logout.xhtml</url-pattern>
     </web-resource-collection>
   </security-constraint>
-    
+       
   <security-constraint>
   <web-resource-collection>
     <web-resource-name>Webservice</web-resource-name>
     <url-pattern>/api/*</url-pattern>
   </web-resource-collection>
 </security-constraint>
+   
+  <!-- ANTI CSRF-->
+  <listener>
+    <listener-class>com.tao.lock.security.CsrfListener</listener-class>
+  </listener>
+  
+   <filter>
+    <filter-name>CsrfFilter</filter-name>
+    <filter-class>com.tao.lock.security.filter.CsrfFilter</filter-class>
+    <init-param>
+      <param-name>entryPoints</param-name>
+      <param-value>/index.xhtml</param-value>
+    </init-param>
+    <init-param>
+      <param-name>exclude</param-name>
+      <param-value>/ui5/,/qrcodes/,/api/service/auth,/api/service/register</param-value>
+    </init-param>
+  </filter>
+  
+  <filter-mapping>
+    <filter-name>CsrfFilter</filter-name>
+    <url-pattern>/api/*</url-pattern>
+  </filter-mapping> 
+  
    
   <!-- ROLES -->
   <security-role>

@@ -6,13 +6,13 @@ sap.ui.controller( "ui5.Auth" ,{
 
 	isUserAuthed: function () {
 		
-		var url = "/lock/api/service/authpolling";
 		
 		var isAuthed = false;
 		
 		$.ajax({
    			type: "POST",
-   			url: url,
+   			url: url_authPolling,
+   			data: csrfToken,
    			async: false,
    			complete: function (xhr, statusCode) {
    				if(xhr.status == '200') {
@@ -27,14 +27,13 @@ sap.ui.controller( "ui5.Auth" ,{
 	},
 	
 	isUserRegistered: function () {
-		
-		var url = "/lock/api/service/regpolling";
-		
+
 		var isRegistered = false;
 		
 		$.ajax({
    			type: "POST",
-   			url: url,
+   			url: url_regPolling,
+   			data: csrfToken,
    			async: false,
    			complete: function (xhr, statusCode) {
    				if(xhr.status == '200') {
@@ -50,13 +49,13 @@ sap.ui.controller( "ui5.Auth" ,{
 	
 	showAuthQR: function() {
 		
-		var url = "/lock/api/service/getauthqr";
+		
 		
 		var qrUrl = "";
 		
 		$.ajax({
    			type: "GET",
-   			url: url,
+   			url: url_authQR,
    			async: false,
    			complete: function (xhr, statusCode) {
    				if(xhr.status == '200') {

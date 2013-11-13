@@ -13,21 +13,7 @@
     	
     
     	<h3>Willkommen</h3>
-    	<h:form>
 
-			<div>
-    			<h:graphicImage value="#{indexBean.qrCodePath}" cache="false" id="qrCode"  />
-			</div>
-			
-    	   	<h:inputText id="enterName" value="#{indexBean.qrText}"/>
-           	
-           	<br />
-           	
-           	<h:commandButton value="Generate Code" action="#{indexBean.renderQR}">
-           		<f:ajax execute="@form" update="qrCode" render="qrCode" />
-           	</h:commandButton>
-           	
-    	</h:form>
     
     </h:body>
     

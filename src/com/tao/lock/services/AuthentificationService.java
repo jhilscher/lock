@@ -1,8 +1,5 @@
 package com.tao.lock.services;
 
-import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -16,7 +13,6 @@ import com.tao.lock.entities.CloudUser;
 import com.tao.lock.rest.json.ClientIdentifierPojo;
 import com.tao.lock.security.AuthentificationHandler;
 import com.tao.lock.security.RegistrationHandler;
-import com.tao.lock.security.SecurityUtils;
 import com.tao.lock.utils.QRUtils;
 import com.tao.lock.utils.Roles;
 
@@ -59,6 +55,9 @@ public class AuthentificationService {
 
 				// Call to SCC
 				String ID_A = connectionService.registerRequest(id1);
+				
+				if (ID_A == null || ID_A.isEmpty())
+					return null;
 				
 				// attach session to this user
 				cloudUser.setSession(request.getSession());
@@ -109,10 +108,9 @@ public class AuthentificationService {
 		
 		String token = connectionService.requestToken(cloudUser.getUserName());
 
+		LOGGER.info("Token-length: " + token.length());
+		
 		url = qrUtils.renderQR(token);
-
-
-		LOGGER.info("TestToken: " + token);
 
 		AuthentificationHandler.addToWaitList(cloudUser, cloudUser.getUserName(), qrUtils);
 			
