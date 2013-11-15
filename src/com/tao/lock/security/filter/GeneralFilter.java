@@ -28,7 +28,6 @@ import com.tao.lock.services.UserService;
  * to a local user.
  *
  */
-@WebFilter("/general/*")
 public class GeneralFilter implements Filter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(GeneralFilter.class);
@@ -37,10 +36,7 @@ public class GeneralFilter implements Filter {
 	private UserService userService;
 
 	@Override
-	public void destroy() {
-
-		
-	}
+	public void destroy() {}
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
@@ -55,6 +51,8 @@ public class GeneralFilter implements Filter {
 			
 			if (cloudUser != null)
 				req.getSession().setAttribute("user", cloudUser);
+			
+			
 		
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());

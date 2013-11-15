@@ -354,49 +354,6 @@ public class ConnectionService {
 			return null;
 	}
 
-//	public String updateClientIdentifier(ClientIdentifierPojo cId) {
-//		try {
-//			
-//			httpClient = getHttpClient();
-//			
-//			HttpPost post = new HttpPost("update");
-//			
-//			// Build up JSON.
-//			Gson gson = WebService.getGson();
-//			String json = gson.toJson(cId);
-//			
-//			LOGGER.info("JSON Connection Call: " + json);
-//			
-//	    	post.addHeader("Accept", "application/json");
-//	    	post.addHeader("Content-Type", "application/json");
-//	
-//	    	post.setEntity(new StringEntity(json));
-//			
-//			HttpResponse resp = httpClient.execute(post);
-//			HttpEntity entity = resp.getEntity();
-//			
-//			String respToString = EntityUtils.toString(entity);
-//			
-//			LOGGER.info("Response Connection Call: " + respToString);
-//			int statusCode = resp.getStatusLine().getStatusCode();
-//			
-//			LOGGER.debug("updateClientIdentifier Statuscode: " + statusCode);
-//			
-//			if(statusCode != 200 && statusCode != 201)
-//				return null;
-//			
-//			return respToString;
-//		
-//		} catch (ParseException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (HttpDestinationException e) {
-//			e.printStackTrace();
-//		}
-//		
-//		return null;
-//	}
 	
 	/**
 	 * Deletes the local data of a client.
@@ -448,4 +405,58 @@ public class ConnectionService {
 	}
 	
 
+
+	/**
+	 * 
+	 * @param cId
+	 * @return
+	 */
+	public String getRiskLevel(ClientIdentifierPojo cId) {
+		try {
+			
+		
+		httpClient = getHttpClient();
+			
+		HttpPost post = new HttpPost("risklevel");
+		
+		// Build up JSON.
+		Gson gson = WebService.getGson();
+		String json = gson.toJson(cId);
+		
+		LOGGER.info("JSON Connection Call: " + json);
+		
+    	post.addHeader("Accept", "text/plain");
+    	post.addHeader("Content-Type", "application/json");
+
+    	post.setEntity(new StringEntity(json));
+		
+		HttpResponse resp = httpClient.execute(post);
+		HttpEntity entity = resp.getEntity();
+		
+		int statusCode = resp.getStatusLine().getStatusCode();
+		
+		LOGGER.debug("registerUser Statuscode: " + statusCode);
+		
+		if(statusCode != 200 && statusCode != 201)
+			return null;
+		
+		String respToString = EntityUtils.toString(entity);
+		
+		respToString = respToString.replace("\"", "");
+		
+		LOGGER.info("Response Get Risk Level: " + respToString);
+		
+		
+		return respToString;
+		
+		} catch (ParseException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (HttpDestinationException e) {
+			e.printStackTrace();
+		}
+		
+		return null;
+	}
 }

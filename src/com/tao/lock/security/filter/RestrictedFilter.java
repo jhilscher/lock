@@ -15,6 +15,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.tao.lock.entities.CloudUser;
+import com.tao.lock.rest.json.ClientIdentifierPojo;
+import com.tao.lock.services.ConnectionService;
 import com.tao.lock.services.UserService;
 
 /**
@@ -31,6 +33,9 @@ public class RestrictedFilter implements Filter {
 	@EJB
 	private UserService userService;
 
+	@EJB
+	private ConnectionService connectionService;
+	
 	@Override
 	public void destroy() { }
 
@@ -49,6 +54,18 @@ public class RestrictedFilter implements Filter {
 		if (cloudUser == null || !cloudUser.getIsRegistered()) {
 			res.sendRedirect("/lock/unauthorized.xhtml");
 		}
+		
+		// TODO: put in utitlity class
+		if (cloudUser.getSecurityLevel() == 2) {
+			
+			ClientIdentifierPojo clientIdentifierPojo = new ClientIdentifierPojo();
+			clientIdentifierPojo.setUserName(cloudUser.getUserName());
+			clientIdentifierPojo.setIpAdress(req.getRemoteAddr());
+			clientIdentifierPojo.setUserAgent("Test");
+			
+			String lvl = connectionService.getRiskLevel(clientIdentifierPojo);
+		}
+		
 		
 		// check
 		if ((String) session.getAttribute("auth") == "true")
