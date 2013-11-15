@@ -6,6 +6,8 @@ import javax.ejb.Stateless;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
+import nl.bitwalker.useragentutils.UserAgent;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,7 +49,6 @@ public class AuthentificationService {
 				String url = null;
 				QRUtils qrUtils = new QRUtils();
 				qrUtils.setContext(context);	
-				
 				
 				// Build Pojo
 				ClientIdentifierPojo id1 = new ClientIdentifierPojo();
@@ -106,7 +107,27 @@ public class AuthentificationService {
 		
 		cloudUser.setSession(request.getSession(false));
 		
-		String token = connectionService.requestToken(cloudUser.getUserName());
+		/**
+		 * Add request related data to the pojo.
+		 * this data will be logged.
+		 */
+		ClientIdentifierPojo clientIdentifierPojo = new ClientIdentifierPojo();
+		clientIdentifierPojo.setUserName(cloudUser.getUserName());
+		
+		// add ip adress
+		clientIdentifierPojo.setIpAdress(request.getRemoteAddr());
+		
+		// parsing user agents
+		UserAgent userAgent = UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
+		String browser = userAgent.getBrowser().getName();
+		String os = userAgent.getOperatingSystem().getName();
+
+		// add user agent
+		clientIdentifierPojo.setUserAgent(browser + " on " + os);
+		
+		LOGGER.info("Request auth from: " + clientIdentifierPojo.toString());
+		
+		String token = connectionService.requestToken(clientIdentifierPojo);
 
 		LOGGER.info("Token-length: " + token.length());
 		

@@ -2,6 +2,7 @@ package com.tao.lock.services;
 
 import java.io.IOException;
 import java.util.Date;
+import java.util.List;
 
 import javax.ejb.Stateless;
 
@@ -19,12 +20,14 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 import com.sap.core.connectivity.api.HttpDestination;
 //import com.sap.core.connectivity.api.DestinationException;
 //import com.sap.core.connectivity.api.http.HttpDestination;
 import com.sap.core.connectivity.httpdestination.api.HttpDestinationException;
 import com.tao.lock.rest.WebService;
 import com.tao.lock.rest.json.ClientIdentifierPojo;
+import com.tao.lock.rest.json.UserLogJSON;
 import com.tao.lock.utils.JsonDateDeserializer;
 
 
@@ -174,7 +177,11 @@ public class ConnectionService {
 	    	get.addHeader("Accept", "application/json");
 			
 			HttpResponse resp = httpClient.execute(get);
+			
 			HttpEntity entity = resp.getEntity();
+			
+			if (entity == null)
+				return null;
 			
 			String respToString = EntityUtils.toString(entity);
 
@@ -203,20 +210,74 @@ public class ConnectionService {
 			return null;
 	}
 	
+	/**
+	 * 
+	 * @param userName
+	 * @return
+	 */
+	public List<UserLogJSON> getLoginLog(String userName) {
+		try {
+			
+			httpClient = getHttpClient();
+				
+			HttpGet get = new HttpGet("getlogsfromuser/" + userName);
+	    	get.addHeader("Accept", "application/json");
+			
+			HttpResponse resp = httpClient.execute(get);
+			HttpEntity entity = resp.getEntity();
+			
+			String respToString = EntityUtils.toString(entity);
+
+			LOGGER.info("getLoginLog " + respToString);
+			
+			int statusCode = resp.getStatusLine().getStatusCode();
+			
+			if(statusCode != 200 && statusCode != 201)
+				return null;
+			
+			// Build up from JSON.
+			// Build Gson with custom TypeAdapter for parsing c#-date format
+			Gson gson = new GsonBuilder().registerTypeAdapter(Date.class, new JsonDateDeserializer()).create();
+			List<UserLogJSON> json = gson.fromJson(respToString, new TypeToken<List<UserLogJSON>>(){}.getType());
+			
+			return json;
+			
+			} catch (ParseException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (HttpDestinationException e) {
+				e.printStackTrace();
+			}
+			
+			return null;
+	}
 	
 	/**
 	 * 
 	 * @param userName
 	 * @return
 	 */
-	public String requestToken(String userName) {
+	public String requestToken(ClientIdentifierPojo clientIdentifierPojo) {
 		try {
+			
 			
 			httpClient = getHttpClient();
 				
-			HttpGet get = new HttpGet("getToken/" + userName);
+			
+			HttpPost post = new HttpPost("loginRequest");
 
-			HttpResponse resp = httpClient.execute(get);
+	    	//post.addHeader("Accept", "application/json");
+	    	post.addHeader("Content-Type", "application/json");
+	    	
+			// Build up JSON.
+			Gson gson = WebService.getGson();
+			String json = gson.toJson(clientIdentifierPojo);
+	    	
+	    	
+	    	post.setEntity(new StringEntity(json));
+
+			HttpResponse resp = httpClient.execute(post);
 			HttpEntity entity = resp.getEntity();
 			
 			String respToString = EntityUtils.toString(entity);

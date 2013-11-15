@@ -32,6 +32,7 @@ import com.tao.lock.entities.CloudUser;
 import com.tao.lock.rest.json.AuthentificationJSON;
 import com.tao.lock.rest.json.ClientIdentifierPojo;
 import com.tao.lock.rest.json.RegistrationJSON;
+import com.tao.lock.rest.json.UserLogJSON;
 import com.tao.lock.security.AuthentificationHandler;
 import com.tao.lock.security.RegistrationHandler;
 import com.tao.lock.services.AuthentificationService;
@@ -173,6 +174,9 @@ import com.tao.lock.utils.Roles;
 	    	
 			ClientIdentifierPojo clientIdentifierPojo = RegistrationHandler.tryToGetUserToRegister(clientIdKey);
 	    	
+			if (clientIdentifierPojo == null)
+				return Response.status(Response.Status.FORBIDDEN).entity("error").build();
+			
 	    	CloudUser user = userService.getUserByName(clientIdentifierPojo.getUserName());
 	    	
 	    	if (clientIdentifierPojo == null || user == null)
@@ -190,6 +194,7 @@ import com.tao.lock.utils.Roles;
 	    	userService.update(user);
 	    	
 
+	    	clientIdentifierPojo = null;
 	    	clientIdKey = null;
 	    	registrationJSON = null;
 	    	
@@ -222,6 +227,17 @@ import com.tao.lock.utils.Roles;
 	    	}
 	    	
 	    	return getGson().toJson(users);
+	    }
+	    
+	    @GET
+	    @Path("/getloginlogs/{username}")
+	    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	    @RolesAllowed(Roles.ADMIN)
+	    public String getLoginLogs(@PathParam("username") String userName) { 
+	    
+	    	List<UserLogJSON> jsons = connectionService.getLoginLog(userName);
+	    	
+	    	return getGson().toJson(jsons);
 	    }
 	    
 	    /**
@@ -279,7 +295,23 @@ import com.tao.lock.utils.Roles;
 	    	String auth = (String) session.getAttribute("auth") == null? "not logged in" : "logged in";
 	    	
 	    	jsonObject.addProperty("isLoggedIn", auth);
+	    	jsonObject.addProperty("securityLevel", user.getSecurityLevel());
 	    	return jsonObject.toString();
+	    }
+	    
+	    @POST
+	    @Path("/savesecuritylevel")
+	    @RolesAllowed(Roles.MANAGER)
+	    public Response saveSecurityLevel(@FormParam("level") int level) {
+	    	CloudUser user = userService.getCloudUser(request);
+	    	
+	    	if (user == null)
+	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
+	    	
+	    	user.setSecurityLevel(level);
+	    	userService.update(user);
+	    	
+	    	return Response.ok().build();
 	    }
 	    
 	    @GET

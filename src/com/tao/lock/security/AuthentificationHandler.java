@@ -39,19 +39,19 @@ public class AuthentificationHandler {
 		userMap.put(userName, user);
 		
 		// kills the user after 2mins
-		 TimerTask timerTask = new TimerTask() {
+	 	TimerTask timerTask = new TimerTask() {
 
-	            @Override
-	            public void run() {
-	            	user.setSession(null);
-	            	userMap.remove(userName);
-	            	qrUtils.deleteFile();
-	            }
-	        };
+            @Override
+            public void run() {
+            	user.setSession(null);
+            	userMap.remove(userName);
+            	qrUtils.deleteFile();
+            }
+        };
 
-	        Timer timer = new Timer(user.getUserName());
+        Timer timer = new Timer(user.getUserName());
 
-	        timer.schedule(timerTask, TIMEOUT);
+        timer.schedule(timerTask, TIMEOUT);
 		
 	}
 	

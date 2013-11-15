@@ -17,20 +17,7 @@ public class ClientIdentifierPojo {
 	
 	@Expose
     private String userName;
-    
-    /**
-     * x1.
-     * Must be store in plain text.
-     */
-    @Expose
-    private String secret;
-    
-    /**
-     * random salt.
-     */
-    @Expose
-    private String salt;
-    
+        
     /**
      * hashed and salted client id.
      * No need to store this in plain text.
@@ -44,28 +31,21 @@ public class ClientIdentifierPojo {
     @Expose
     private Date loginAttempt;
 
+    @Expose
+    private String ipAdress;
+    
+    @Expose
+    private String userAgent;
+    
+    @Expose
+    private String secret;
+    
 	public String getUserName() {
 		return userName;
 	}
 
 	public void setUserName(String userName) {
 		this.userName = userName;
-	}
-
-	public String getSecret() {
-		return secret;
-	}
-
-	public void setSecret(String secret) {
-		this.secret = secret;
-	}
-
-	public String getSalt() {
-		return salt;
-	}
-
-	public void setSalt(String salt) {
-		this.salt = salt;
 	}
 
 	public String getHashedClientId() {
@@ -123,6 +103,38 @@ public class ClientIdentifierPojo {
 
 	public void setLoginAttempt(Date loginAttempt) {
 		this.loginAttempt = loginAttempt;
+	}
+
+	public String getIpAdress() {
+		return ipAdress;
+	}
+
+	public void setIpAdress(String ipAdress) {
+		this.ipAdress = ipAdress;
+	}
+
+	public String getUserAgent() {
+		return userAgent;
+	}
+
+	public void setUserAgent(String userAgent) {
+		this.userAgent = userAgent;
+	}
+
+	public String getSecret() {
+		return secret;
+	}
+
+	public void setSecret(String secret) {
+		this.secret = secret;
+	}
+
+	@Override
+	public String toString() {
+		return "ClientIdentifierPojo [userName=" + userName
+				+ ", hashedClientId=" + hashedClientId + ", created=" + created
+				+ ", loginAttempt=" + loginAttempt + ", ipAdress=" + ipAdress
+				+ ", userAgent=" + userAgent + ", secret=" + secret + "]";
 	}
 
 }

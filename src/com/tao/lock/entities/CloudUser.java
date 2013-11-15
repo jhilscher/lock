@@ -78,15 +78,26 @@ public class CloudUser {
     @Column()
 	private Boolean isRegistered;
 	    
+	/*
+	 * 0: Restricted -> Default
+	 * 1: Always
+	 * 2: on risk
+	 */
+	@Expose
+	@Column()
+	private int securityLevel;
+	
     @Transient
     private HttpSession session;
-    
+        
     public CloudUser() {}
     
     // workaround for timestamp value
     @PrePersist
     protected void onCreate() {
         createdAt = new Date();
+        
+        securityLevel = 0;
         
         // set default value
         if (isRegistered == null )  
@@ -204,6 +215,14 @@ public class CloudUser {
 
 	public void setLastLogIn(Date lastLogIn) {
 		this.lastLogIn = lastLogIn;
+	}
+
+	public int getSecurityLevel() {
+		return securityLevel;
+	}
+
+	public void setSecurityLevel(int securityLevel) {
+		this.securityLevel = securityLevel;
 	}
 
 

@@ -36,6 +36,16 @@
 							    }),
 						    	new sap.ui.commons.TextView({
 						    		text: "{/isLoggedIn}"
+				    			}),
+				    			new sap.ui.commons.TextView({
+						    		text: "{/securityLevel}"
+				    			}),
+				    			new sap.ui.commons.Button({
+				    				text:"Settings",
+				    				tooltip:"Settings",
+				    				press:function(oEvent){
+				    					openSettings(oEvent);
+				    				}
 				    			})
 			    ],
 			    

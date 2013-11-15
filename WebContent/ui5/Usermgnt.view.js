@@ -85,18 +85,29 @@ sap.ui.jsview("ui5.Usermgnt", {
          }));
          
          oTable2.addColumn(new sap.ui.table.Column({
-          	label: new sap.ui.commons.Label({text: "Last log in"}),
-          	template:  new sap.ui.commons.TextView().bindProperty("text", "lastLogIn"),
-          	width: "100px",
-    		hAlign: "Center"
+          	label: new sap.ui.commons.Label({text: "Login Logs"}),
+          	template:  new sap.ui.commons.Button({
+                text : "show logs",
+                tooltip : "Show the login logs of this user.",
+                press : function(oEvent) {
+                		var oContext = oEvent.getSource().getBindingContext();  
+                		oController.showLogs(oContext.getProperty('userName'));
+                	}
+        	}).bindProperty("enabled", "isRegistered", function (sValue) { return !!sValue; }),
+          	width: "50px",
+    		hAlign: "Left"
           }));
          
          //Create a model and bind the table rows to this model
         var oModel2 = new sap.ui.model.json.JSONModel();	
 		
+        oTable2.setBusy(true);
         
         // Load Data
         oModel2.loadData(url_allUsers);
+        oModel2.attachRequestCompleted(function () {
+        	oTable2.setBusy(false);
+        });
         
         //oModel2.setData({modelData: oController.loadData()});
         
@@ -107,7 +118,6 @@ sap.ui.jsview("ui5.Usermgnt", {
         //Initially sort the table
         oTable2.sort(oTable2.getColumns()[0]);
 
-        oTable2.setBusy(false);
         
         elements.push(oTable2);
 		

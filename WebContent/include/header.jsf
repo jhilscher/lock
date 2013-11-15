@@ -25,9 +25,15 @@
      // all mapped urls
      // global scope
      
+     // for GETS
+     var getToken = "?csrf=#{tokenMapper.getCsrfToken()}";
+     
      //GET
-     var url_currentUser = "/lock/api/service/getcurrentuser" + "?csrf=#{tokenMapper.getCsrfToken()}";
+     var url_currentUser = "/lock/api/service/getcurrentuser" + getToken;
     
+     // POST
+     var url_saveSettings = "/lock/api/service/savesecuritylevel";
+     
      // POST
      var url_regPolling = "/lock/api/service/regpolling";
      
@@ -35,22 +41,28 @@
      var url_authPolling = "/lock/api/service/authpolling";
      
      // GET
-     var url_regQR = "/lock/api/service/getregisterqr" + "?csrf=#{tokenMapper.getCsrfToken()}";
+     var url_regQR = "/lock/api/service/getregisterqr" + getToken;
      
      // GET
-     var url_authQR = "/lock/api/service/getauthqr" + "?csrf=#{tokenMapper.getCsrfToken()}";
+     var url_authQR = "/lock/api/service/getauthqr" + getToken;
      
      // POST
      var url_removeUser = "/lock/api/service/removeclientidfromuser";
      
      // GET
-     var url_allUsers = "/lock/api/service/getallusers" + "?csrf=#{tokenMapper.getCsrfToken()}";
+     var url_allUsers = "/lock/api/service/getallusers" + getToken;
     
+     // GET
+     var url_getloginlogs = "/lock/api/service/getloginlogs/";
+     
+
+     
      // for POSTs
      var csrfToken = "&amp;csrf=" + "#{tokenMapper.getCsrfToken()}";
      
      </script>
 
 	<script src="/lock/ui5/utils/general.js"></script>
+	<script src="/lock/ui5/utils/settings.js"></script>
 
 </ui:composition>

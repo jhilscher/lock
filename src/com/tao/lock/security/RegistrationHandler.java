@@ -9,7 +9,6 @@ import javax.inject.Singleton;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.tao.lock.entities.CloudUser;
 import com.tao.lock.rest.json.ClientIdentifierPojo;
 import com.tao.lock.utils.QRUtils;
 
@@ -34,20 +33,19 @@ public class RegistrationHandler {
 		// kills the user after 2mins
 		TimerTask timerTask = new TimerTask() {
 
-	            @Override
-	            public void run() {
-	            	// remove Identifier
-	            	userMap.remove(clientIdKey);
-	            	qrUtils.deleteFile();
-	            	
-	            	LOGGER.info(clientIdentifierPojo.getUserName() + " removed from registration waitlist.");
-	            }
-	        };
+            @Override
+            public void run() {
+            	// remove Identifier
+            	userMap.remove(clientIdKey);
+            	qrUtils.deleteFile();
+            	
+            	LOGGER.info(clientIdentifierPojo.getUserName() + " removed from registration waitlist.");
+            }
+        };
 
-	        Timer timer = new Timer(clientIdentifierPojo.getUserName());
+        Timer timer = new Timer(clientIdentifierPojo.getUserName());
 
-	        timer.schedule(timerTask, TIMEOUT);
-		
+        timer.schedule(timerTask, TIMEOUT);
 	}
 	
 	public static ClientIdentifierPojo tryToGetUserToRegister(String clientIdKey) {
@@ -55,6 +53,7 @@ public class RegistrationHandler {
 		ClientIdentifierPojo user = userMap.get(clientIdKey);
 		userMap.remove(clientIdKey);
 		return user;
+		
 	}
 	
 }

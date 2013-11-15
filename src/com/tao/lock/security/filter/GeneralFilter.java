@@ -12,7 +12,9 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.tao.lock.entities.CloudUser;
 import com.tao.lock.services.UserService;
@@ -29,6 +31,8 @@ import com.tao.lock.services.UserService;
 @WebFilter("/general/*")
 public class GeneralFilter implements Filter {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(GeneralFilter.class);
+	
 	@EJB
 	private UserService userService;
 
@@ -45,10 +49,17 @@ public class GeneralFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 		
-		// FIXME
-		CloudUser cloudUser = userService.getCloudUser(req);
-		req.getSession().setAttribute("user", cloudUser);
+		try {
+			
+			CloudUser cloudUser = userService.getCloudUser(req);
+			
+			if (cloudUser != null)
+				req.getSession().setAttribute("user", cloudUser);
 		
+		} catch (Exception e) {
+			LOGGER.error(e.getMessage());
+			e.printStackTrace();
+		}
 		
 		chain.doFilter(req, res);
 		
