@@ -6,8 +6,6 @@ import javax.ejb.Stateless;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 
-import nl.bitwalker.useragentutils.UserAgent;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,6 +15,7 @@ import com.tao.lock.security.AuthentificationHandler;
 import com.tao.lock.security.RegistrationHandler;
 import com.tao.lock.utils.QRUtils;
 import com.tao.lock.utils.Roles;
+import com.tao.lock.utils.UtilityMethods;
 
 /**
  * 
@@ -117,13 +116,8 @@ public class AuthentificationService {
 		// add ip adress
 		clientIdentifierPojo.setIpAdress(request.getRemoteAddr());
 		
-		// parsing user agents
-		UserAgent userAgent = UserAgent.parseUserAgentString(request.getHeader("User-Agent"));
-		String browser = userAgent.getBrowser().getName();
-		String os = userAgent.getOperatingSystem().getName();
-
 		// add user agent
-		clientIdentifierPojo.setUserAgent(browser + " on " + os);
+		clientIdentifierPojo.setUserAgent(UtilityMethods.getShortUserAgentString(request));
 		
 		LOGGER.info("Request auth from: " + clientIdentifierPojo.toString());
 		

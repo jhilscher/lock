@@ -126,6 +126,7 @@ sap.ui.controller( "ui5.Usermgnt" ,{
 	         oModel2.loadData(url_getloginlogs + userName + getToken);
 	         oModel2.attachRequestCompleted(function () {
 	         	oTable2.setBusy(false);
+	         	oTable2.rerender();
 	         });
 	         
 	         

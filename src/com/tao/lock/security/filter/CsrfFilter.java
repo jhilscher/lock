@@ -1,8 +1,6 @@
 package com.tao.lock.security.filter;
 
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
@@ -17,9 +15,6 @@ import javax.servlet.http.HttpSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Charsets;
-import com.google.common.io.CharStreams;
-import com.google.common.io.Closeables;
 import com.tao.lock.security.CsrfListener;
 
 
@@ -35,7 +30,8 @@ public class CsrfFilter implements Filter {
 	private FilterConfig filterConfig = null;
 	
 	private static final String PARAM_EXCLUDE = "exclude";
-	private static final String PARAM_ENTRY_POINTS = "entryPoints";
+	
+	private static final String PARAM_ENTRY_POINTS = "entryPoints"; // currently not used
 	
 	
 	@Override

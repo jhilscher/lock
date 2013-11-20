@@ -31,7 +31,7 @@ public class AuthentificationHandler {
 	 * Adds a user to the waitlist to authentification.
 	 * The waitlist entry is valid for 2mins.
 	 * @param user
-	 * @param token		Hashed Token
+	 * @param userName		
 	 * @param qrUtils
 	 */
 	public static void addToWaitList(final CloudUser user, final String userName, final QRUtils qrUtils) {

@@ -157,7 +157,6 @@ import com.tao.lock.utils.Roles;
     		return Response.status(Response.Status.CREATED).entity("success").build();
 	    }
 	    
-	    	
 	    /**
 	     * Registers the client to the server.
 	     * Checks the clientIdKey.
@@ -360,8 +359,6 @@ import com.tao.lock.utils.Roles;
 	    	
 	    }
 
-	    
-	    
 	    /**
 	     * TEST Method for CSRF-Attack.
 	     * @param id

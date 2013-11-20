@@ -107,6 +107,7 @@ sap.ui.jsview("ui5.Usermgnt", {
         oModel2.loadData(url_allUsers);
         oModel2.attachRequestCompleted(function () {
         	oTable2.setBusy(false);
+        	oTable2.rerender();
         });
         
         //oModel2.setData({modelData: oController.loadData()});
@@ -118,6 +119,7 @@ sap.ui.jsview("ui5.Usermgnt", {
         //Initially sort the table
         oTable2.sort(oTable2.getColumns()[0]);
 
+        
         
         elements.push(oTable2);
 		

@@ -68,7 +68,6 @@ public class ConnectionService {
 	public String registerRequest(ClientIdentifierPojo cId) {
 		try {
 			
-		
 		httpClient = getHttpClient();
 			
 		HttpPost post = new HttpPost("registerRequest");
@@ -255,16 +254,14 @@ public class ConnectionService {
 	
 	/**
 	 * 
-	 * @param userName
+	 * @param clientIdentifierPojo
 	 * @return
 	 */
 	public String requestToken(ClientIdentifierPojo clientIdentifierPojo) {
 		try {
 			
-			
 			httpClient = getHttpClient();
 				
-			
 			HttpPost post = new HttpPost("loginRequest");
 
 	    	//post.addHeader("Accept", "application/json");
@@ -273,7 +270,6 @@ public class ConnectionService {
 			// Build up JSON.
 			Gson gson = WebService.getGson();
 			String json = gson.toJson(clientIdentifierPojo);
-	    	
 	    	
 	    	post.setEntity(new StringEntity(json));
 
@@ -411,7 +407,7 @@ public class ConnectionService {
 	 * @param cId
 	 * @return
 	 */
-	public String getRiskLevel(ClientIdentifierPojo cId) {
+	public Double getRiskLevel(ClientIdentifierPojo cId) {
 		try {
 			
 		
@@ -444,10 +440,12 @@ public class ConnectionService {
 		
 		respToString = respToString.replace("\"", "");
 		
+		Double level  = Double.parseDouble(respToString);
+		
 		LOGGER.info("Response Get Risk Level: " + respToString);
 		
 		
-		return respToString;
+		return level;
 		
 		} catch (ParseException e) {
 			e.printStackTrace();
@@ -457,6 +455,6 @@ public class ConnectionService {
 			e.printStackTrace();
 		}
 		
-		return null;
+		return 0.0;
 	}
 }

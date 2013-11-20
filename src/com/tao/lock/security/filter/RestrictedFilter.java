@@ -14,6 +14,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.tao.lock.entities.CloudUser;
 import com.tao.lock.rest.json.ClientIdentifierPojo;
 import com.tao.lock.services.ConnectionService;
@@ -30,6 +33,8 @@ import com.tao.lock.services.UserService;
 @WebFilter("/restricted/*")
 public class RestrictedFilter implements Filter {
 
+	private static final Logger LOGGER = LoggerFactory.getLogger(RestrictedFilter.class);
+	
 	@EJB
 	private UserService userService;
 
@@ -61,9 +66,15 @@ public class RestrictedFilter implements Filter {
 			ClientIdentifierPojo clientIdentifierPojo = new ClientIdentifierPojo();
 			clientIdentifierPojo.setUserName(cloudUser.getUserName());
 			clientIdentifierPojo.setIpAdress(req.getRemoteAddr());
-			clientIdentifierPojo.setUserAgent("Test");
 			
-			String lvl = connectionService.getRiskLevel(clientIdentifierPojo);
+			Double lvl = connectionService.getRiskLevel(clientIdentifierPojo);
+			
+			LOGGER.info("Risklevel of " + cloudUser.getUserName() + " :" + lvl);
+			
+			if (lvl > 0.0) {
+				chain.doFilter(req, res);
+				return;
+			}
 		}
 		
 		

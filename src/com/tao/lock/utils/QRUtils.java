@@ -23,7 +23,6 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.client.j2se.MatrixToImageWriter;
 import com.google.zxing.common.BitMatrix;
-import com.tao.lock.security.SecurityUtils;
 
 /**
  * Utility to generate a QR-Code image file.
@@ -60,7 +59,9 @@ public class QRUtils {
 	private final String FILE_TYPE = ".png";
 	
 	/**
-	 * 
+	 * Renders a QR-Code and creates an image.
+	 * @param qrText The Text for the QR-Code.
+	 * @return URL of the image.
 	 */
 	public String renderQR(String qrText) {
 		
@@ -148,7 +149,7 @@ public class QRUtils {
 	
 	/**
 	 * deletes the qr-code image.
-	 * @return
+	 * @return Boolean if successfully deleted.
 	 */
 	public Boolean deleteFile() {
 		if (file != null && file.delete()) {
@@ -159,9 +160,9 @@ public class QRUtils {
 	} 
 	
 	/**
-	 * 	
+	 * Gets the filename from a URL.	
 	 * @param url
-	 * @return
+	 * @return Filename as String.
 	 */
 	public static String getFilenameFromUrl(String url) {
 		String[] temp = url.split("/");

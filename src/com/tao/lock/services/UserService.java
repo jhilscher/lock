@@ -68,8 +68,6 @@ public class UserService {
 		return userDao.addUser(user);
 	}
 	
-
-	
 	// WebService#register needs this -> PermitAll
 	@PermitAll
 	public CloudUser update(CloudUser user) {
@@ -93,6 +91,16 @@ public class UserService {
 			return null;
 		
 		User ssoUser = null;
+		CloudUser cloudUser = null;
+		
+		try {
+			cloudUser = (CloudUser)request.getSession().getAttribute("user");
+		} catch (Exception e) {
+			LOGGER.error("User not in session!", e.getMessage());
+		}
+		
+		if (cloudUser != null)
+			return cloudUser;
 		
 		try {
 			ssoUser = authorizationService.getUser(request);
@@ -104,7 +112,7 @@ public class UserService {
 			return null;
 		
 		// try finding the corresponding local user
-		CloudUser cloudUser = getUserByName(ssoUser.getName());
+		cloudUser = getUserByName(ssoUser.getName());
 		
 		if (cloudUser != null) {
 			return cloudUser;
