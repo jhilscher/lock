@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en"
+	  xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:f="http://java.sun.com/jsf/core"      
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets">
+ 
+    <h:head>
+		<ui:include src="/include/header.jsf" />
+		
+		<script>
+		
+			
+			
+			sap.ui.localResources("ui5");
+			
+			//shell.placeAt("shellArea");
+			
+			var pageHash = "exlogin";
+			if (window.location.hash) {
+		        pageHash = window.location.hash.substring(1);
+		    }
+			//setShellContent(pageHash);
+			
+
+		 var oAppHeader = new sap.ui.commons.ApplicationHeader(); 	
+		 oAppHeader.setDisplayLogoff(false);
+		 oAppHeader.setUserName("");
+		 oAppHeader.setLogoText("LOG ON");
+		 
+		 oAppHeader.placeAt("shellArea");
+		 
+		 var title = new sap.ui.commons.TextView({
+	            text : "Log on",
+	            design : sap.ui.commons.TextViewDesign.H1,
+	     });
+		 
+		 title.placeAt("shellArea");
+		 
+		 
+		 var devider = new sap.ui.commons.HorizontalDivider();
+		 devider.placeAt("shellArea");
+		 
+		 
+		 var qrUrl;
+		 
+		 var oImage = new sap.ui.commons.Image("qrCodeAuth");
+		 
+		 oImage.setTooltip("Scan this QR-Code to login.");
+	
+		 oImage.setBusy(true);
+
+			$.ajax({
+	   			type: "GET",
+	   			url: url_authQR,
+	   			complete: function (xhr, statusCode) {
+	   				if(xhr.status == '200') {
+	   					qrUrl = xhr.responseText;
+	   					oImage.setBusy(false);
+	   					oImage.setSrc(qrUrl);
+	   				} else {
+	   					qrUrl = false;
+	   				}
+	   			}
+	   		});
+			
+			oImage.placeAt("shellArea");
+
+			
+			var request = function() {
+					$.ajax({
+			   			type: "POST",
+			   			url: url_authPolling,
+			   			data: csrfToken,
+			   			complete: function (xhr, statusCode) {
+			   				if(xhr.status == '200') {
+			   					window.location = "/lock/";
+			   				} 
+			   			}
+			   		});
+			};
+			
+
+			var interval = setInterval(request, 3000);
+			
+		</script>
+		
+    </h:head>
+    
+    <h:body class="sapUiBody"  role="application">
+
+		<div id="shellArea">
+		
+		
+		
+		</div>
+    
+    </h:body>
+    
+</html>

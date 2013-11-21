@@ -32,6 +32,7 @@ sap.ui.controller( "ui5.Usermgnt" ,{
     					model.loadData(url_allUsers);
     					table.setBusy(false);
     					table.rerender();
+    					sap.ui.commons.MessageBox.alert("Successfully deleted the mobile Client.");
     				} 
     				else {
     					 sap.ui.commons.MessageBox.alert("Failed to delete mobile Client from user!");

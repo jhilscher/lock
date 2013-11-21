@@ -60,7 +60,13 @@ public class RestrictedFilter implements Filter {
 			res.sendRedirect("/lock/unauthorized.xhtml");
 		}
 		
-		// TODO: put in utitlity class
+		// check if already logged in
+		if ((String) session.getAttribute("auth") == "true") {
+			chain.doFilter(req, res);
+			return;
+		}
+		
+		// check if sec-level is "on risk" --> grant access if risk is ok
 		if (cloudUser.getSecurityLevel() == 2) {
 			
 			ClientIdentifierPojo clientIdentifierPojo = new ClientIdentifierPojo();
@@ -71,19 +77,17 @@ public class RestrictedFilter implements Filter {
 			
 			LOGGER.info("Risklevel of " + cloudUser.getUserName() + " :" + lvl);
 			
-			if (lvl > 0.0) {
+			if (lvl > 0.0) { // risk ok, let it pass
 				chain.doFilter(req, res);
-				return;
+			} else { // you shall not pass
+				res.sendRedirect("/lock/login.xhtml");
 			}
+			
+			return;
 		}
 		
-		
-		// check
-		if ((String) session.getAttribute("auth") == "true")
-			chain.doFilter(req, res);
-		else
-			res.sendRedirect("/lock/#locklogin");
-		
+		// else send to login page
+		res.sendRedirect("/lock/login.xhtml");
 	}
 
     @Override

@@ -1,7 +1,6 @@
 package com.tao.lock.security;
 
 import java.util.HashMap;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -43,6 +42,9 @@ public class AuthentificationHandler {
 
             @Override
             public void run() {
+            	
+            	LOGGER.info("Removed " + user.getUserName() + " from Auth-waitlist.");
+            	
             	user.setSession(null);
             	userMap.remove(userName);
             	qrUtils.deleteFile();

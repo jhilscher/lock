@@ -48,11 +48,29 @@ public class GeneralFilter implements Filter {
 			
 			CloudUser cloudUser = userService.getCloudUser(req);
 			
-			if (cloudUser != null)
+			if (cloudUser != null) 
 				req.getSession().setAttribute("user", cloudUser);
 			
+			// block, if sec-level is on "always".
+			if (cloudUser.getSecurityLevel() == 1) {
+				
+				// check path
+				String path = req.getRequestURI();
+				
+				// if on login-path
+				if (path.endsWith("login.xhtml") || path.endsWith("/auth") || path.endsWith("/getauthqr") ) {
+					chain.doFilter(req, res);
+					return;
+				} 
+				
+				
+//				if ((String) req.getSession().getAttribute("auth") != "true") {
+//					res.sendRedirect("/lock/login.xhtml");
+//					return;
+//				}
+			}
 			
-		
+			
 		} catch (Exception e) {
 			LOGGER.error(e.getMessage());
 			e.printStackTrace();

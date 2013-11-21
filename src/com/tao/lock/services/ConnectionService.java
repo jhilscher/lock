@@ -299,7 +299,7 @@ public class ConnectionService {
 	
 	/**
 	 * Validates a token for authentification.
-	 * @param clientID		Not hashed clientId
+	 * @param clientID		clientId
 	 * @param token			Token response from mobile
 	 * @return UserName 	UserName if valid, null if not
 	 */
@@ -314,7 +314,7 @@ public class ConnectionService {
 			
 			// build up a json object
 	    	JsonObject jsonObject = new JsonObject();
-	    	jsonObject.addProperty("hashedClientId", clientID);
+	    	jsonObject.addProperty("clientId", clientID);
 	    	jsonObject.addProperty("token", token);
 	    	
 			
@@ -376,8 +376,6 @@ public class ConnectionService {
 			
 			HttpResponse resp = httpClient.execute(post);
 			
-			//HttpEntity entity = resp.getEntity();
-			//String respToString = EntityUtils.toString(entity);
 
 			int statusCode = resp.getStatusLine().getStatusCode();
 			

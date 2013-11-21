@@ -20,7 +20,7 @@
 			        }), new sap.ui.ux3.NavigationItem({
 			            key : "locklogin",
 			            id : "locklogin",
-			            text : "Log In"
+			            text : "Log On"
 			        }) ]
 			    }), new sap.ui.ux3.NavigationItem({
 			        key : "usermanagement",

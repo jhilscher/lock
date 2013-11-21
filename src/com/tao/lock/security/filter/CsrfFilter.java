@@ -75,18 +75,14 @@ public class CsrfFilter implements Filter {
 			return;
 		}
 		
-		// get token from session
-		String token = session.getAttribute(CsrfListener.CSRFTOKEN).toString();
-	
-
 		// get the parameter
 		String parameter = req.getParameter(CsrfListener.CSRFTOKEN);
 		
 		
-		if ( session.getAttribute(CsrfListener.CSRFTOKEN).toString().equals(parameter)) {
+		if (session.getAttribute(CsrfListener.CSRFTOKEN).toString().equals(parameter)) {
 			chain.doFilter(req, res); 
 		} else {
-			res.sendError(400); 
+			res.sendError(400); // send statuscode 400
 		}
 	
 

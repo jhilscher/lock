@@ -93,7 +93,7 @@ import com.tao.lock.utils.Roles;
 	    	if (request.getSession().getAttribute("auth") == "true")
 	    				return Response.ok().build();
 
-	    	return Response.status(Response.Status.FORBIDDEN).build();
+	    	return Response.status(Response.Status.UNAUTHORIZED).build();
 	    }
 	    
 	    /**
@@ -126,11 +126,16 @@ import com.tao.lock.utils.Roles;
 	    @PermitAll 
 	    public Response auth(AuthentificationJSON authJSON) {
 
+    		if (authJSON == null || authJSON.getClientIdKey() == null || authJSON.getClientIdKey() == null) {
+    			LOGGER.info("400: Bad request");
+    			return Response.status(Response.Status.BAD_REQUEST).build();	
+    		}
+	    	
     		// resp should be the user name
     		String resp = connectionService.validateToken(authJSON.getClientIdKey(), authJSON.getX1());
     		
     		if (resp == null) {
-    			LOGGER.info("401: user not found: ");
+    			LOGGER.info("403: user not found: ");
     			return Response.status(Response.Status.FORBIDDEN).entity("key wrong?").build();	
     		}
     		
@@ -141,16 +146,16 @@ import com.tao.lock.utils.Roles;
     		
 
     		if (user == null) {
-    			LOGGER.info("401: user is not auted.");
+    			LOGGER.info("403: user is not auted.");
     			return Response.status(Response.Status.FORBIDDEN).entity("key wrong?").build();	
     		}
     		
 	    	HttpSession session = user.getSession();
     		if(session == null) {
-    			LOGGER.info("401: session not found");
+    			LOGGER.info("403: session not found");
     			return Response.status(Response.Status.FORBIDDEN).build();
     		}
-    		// FIXME: Give User Auth?! 
+
     		// Add to session
     		user.getSession().setAttribute("auth", "true");
 
@@ -183,7 +188,7 @@ import com.tao.lock.utils.Roles;
 
 	    	// add x_1 to the user
 	    	clientIdentifierPojo.setSecret(registrationJSON.getX1());
-	    	clientIdentifierPojo.setHashedClientId(clientIdKey);
+	    	clientIdentifierPojo.setClientId(clientIdKey);
 	    	
 	    	if(!connectionService.registerConfirm(clientIdentifierPojo))
 	    		return Response.status(Response.Status.FORBIDDEN).entity("error").build();
@@ -216,7 +221,6 @@ import com.tao.lock.utils.Roles;
 	    		ClientIdentifierPojo pojo = connectionService.getClientIdentifierByUserName(cUser.getUserName());
 	    		
 	    		if (pojo != null) {
-	    			//cUser.setCreatedAt(pojo.getCreated());
 	    			cUser.setLastLogIn(pojo.getLoginAttempt());
 	    			cUser.setIsRegistered(true);
 	    		} else {
@@ -255,11 +259,15 @@ import com.tao.lock.utils.Roles;
 	    	if (user == null)
 	    		Response.status(Response.Status.NO_CONTENT).entity("user not found").build();
 	    	
-	    	user.setIsRegistered(false);
-	    	connectionService.deleteClientIdentifier(user.getUserName());
-	    	userService.update(user);
 	    	
-	    	return Response.status(Response.Status.CREATED).entity("success").build();
+	    	
+	    	if (connectionService.deleteClientIdentifier(user.getUserName())) {
+		    	user.setIsRegistered(false);
+		    	userService.update(user);
+		    	return Response.status(Response.Status.CREATED).entity("success").build();
+	    	}
+	    	
+	    	return Response.status(Response.Status.PRECONDITION_FAILED).entity("fail").build();
 	    	
 	    }
 	    
@@ -291,7 +299,7 @@ import com.tao.lock.utils.Roles;
 	    	jsonObject.addProperty("userName", user.getUserName());
 	    	
 	    	HttpSession session = request.getSession();
-	    	String auth = (String) session.getAttribute("auth") == null? "not logged in" : "logged in";
+	    	String auth = (String) session.getAttribute("auth") != "true"? "not logged in" : "logged in";
 	    	
 	    	jsonObject.addProperty("isLoggedIn", auth);
 	    	jsonObject.addProperty("securityLevel", user.getSecurityLevel());
@@ -303,6 +311,9 @@ import com.tao.lock.utils.Roles;
 	    @RolesAllowed(Roles.MANAGER)
 	    public Response saveSecurityLevel(@FormParam("level") int level) {
 	    	CloudUser user = userService.getCloudUser(request);
+	    	
+	    	if (level >= 3 || level < 0) // values 0,1,2 are valid
+	    		return Response.status(Response.Status.BAD_REQUEST).build();
 	    	
 	    	if (user == null)
 	    		return Response.status(Response.Status.UNAUTHORIZED).entity("error").build();
@@ -371,9 +382,7 @@ import com.tao.lock.utils.Roles;
 	    public Response csrfTest(@PathParam("username") String userName) {
 	    	
 	    	CloudUser user = userService.getUserByName(userName);
-	    	
-	    	//org.owasp.csrfguard.CsrfGuardServletContextListener 
-	    	
+	    		    	
 	    	if (user == null)
 	    		Response.status(Response.Status.NO_CONTENT).entity("user not found").build();
 	    	

@@ -15,7 +15,7 @@
    
 <script id="sap-ui-bootstrap"
     src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js"
-    data-sap-ui-theme="sap_bluecrystal"
+    data-sap-ui-theme="sap_goldreflection"
     data-sap-ui-libs="sap.ui.commons,sap.ui.table,sap.ui.ux3"
     data-sap-ui-xx-preload="sync"
     ></script>

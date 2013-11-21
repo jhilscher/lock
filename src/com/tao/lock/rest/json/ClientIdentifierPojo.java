@@ -23,7 +23,7 @@ public class ClientIdentifierPojo {
      * No need to store this in plain text.
      */
     @Expose
-    private String hashedClientId;
+    private String clientId;
 
     @Expose
     private Date created;
@@ -48,20 +48,14 @@ public class ClientIdentifierPojo {
 		this.userName = userName;
 	}
 
-	public String getHashedClientId() {
-		return hashedClientId;
-	}
 
-	public void setHashedClientId(String hashedClientId) {
-		this.hashedClientId = hashedClientId;
-	}
 
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result
-				+ ((hashedClientId == null) ? 0 : hashedClientId.hashCode());
+				+ ((clientId == null) ? 0 : clientId.hashCode());
 		result = prime * result
 				+ ((userName == null) ? 0 : userName.hashCode());
 		return result;
@@ -76,10 +70,10 @@ public class ClientIdentifierPojo {
 		if (getClass() != obj.getClass())
 			return false;
 		ClientIdentifierPojo other = (ClientIdentifierPojo) obj;
-		if (hashedClientId == null) {
-			if (other.hashedClientId != null)
+		if (clientId == null) {
+			if (other.clientId != null)
 				return false;
-		} else if (!hashedClientId.equals(other.hashedClientId))
+		} else if (!clientId.equals(other.clientId))
 			return false;
 		if (userName == null) {
 			if (other.userName != null)
@@ -132,9 +126,17 @@ public class ClientIdentifierPojo {
 	@Override
 	public String toString() {
 		return "ClientIdentifierPojo [userName=" + userName
-				+ ", hashedClientId=" + hashedClientId + ", created=" + created
+				+ ", hashedClientId=" + clientId + ", created=" + created
 				+ ", loginAttempt=" + loginAttempt + ", ipAdress=" + ipAdress
 				+ ", userAgent=" + userAgent + ", secret=" + secret + "]";
+	}
+
+	public String getClientId() {
+		return clientId;
+	}
+
+	public void setClientId(String clientId) {
+		this.clientId = clientId;
 	}
 
 }

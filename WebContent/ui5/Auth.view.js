@@ -15,7 +15,7 @@ sap.ui.jsview("ui5.Auth", {
 		var _this = this;
 		
 		var title = new sap.ui.commons.TextView({
-	            text : "Log in",
+	            text : "Log on",
 	            design : sap.ui.commons.TextViewDesign.H1
 	     });
 		 
@@ -34,7 +34,7 @@ sap.ui.jsview("ui5.Auth", {
 		 
 		 if (isRegistered) {
 			 	_this.authButton = new sap.ui.commons.Button({
-			        text : "Log In",
+			        text : "Log On",
 			        tooltip : "This will show a QR-Code to log in with your smartphone",
 			        press : function (event) { _this.openQRCode(oController); }
 			});	
@@ -55,7 +55,7 @@ sap.ui.jsview("ui5.Auth", {
 	
 		var oQRDialog = new sap.ui.commons.Dialog({modal: true});
 
-		oQRDialog.setTitle("Scan to log in.");
+		oQRDialog.setTitle("Scan to log on.");
         
 
 		if (qrUrl) {
@@ -96,6 +96,8 @@ sap.ui.jsview("ui5.Auth", {
 
 				 // stop interval
 				clearInterval(interval);
+				clearInterval(disposeinterval);
+
 				
 				// insert redirect button
 				oQRDialog.addButton(new sap.ui.commons.Button({
@@ -104,6 +106,20 @@ sap.ui.jsview("ui5.Auth", {
 		        		window.location.href = "/lock/restricted";
 		        	}}));
 			}
+		}
+		
+		// disable after 2 mins
+		var disposeinterval = setInterval(dispose, 2 * 1000 * 60);
+		
+		// 
+		function dispose() {
+			oQRDialog.close();
+    		oQRDialog.destroyContent();
+    		
+    		// stop interval
+			clearInterval(interval);
+			clearInterval(disposeinterval);
+			sap.ui.commons.MessageBox.alert("The time to register has run out.");
 		}
 		
 		if (qrUrl) 
