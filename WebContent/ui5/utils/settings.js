@@ -25,7 +25,7 @@ var openSettings = function () {
 	
 	var settingsDialog = new sap.ui.commons.Dialog({
 		modal: true,
-		width: "60%"
+		width: "340px"
 			});
 
 	settingsDialog.setTitle("Settings");

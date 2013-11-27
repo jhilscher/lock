@@ -16,7 +16,7 @@
 <script id="sap-ui-bootstrap"
     src="https://sapui5.hana.ondemand.com/resources/sap-ui-core.js"
     data-sap-ui-theme="sap_goldreflection"
-    data-sap-ui-libs="sap.ui.commons,sap.ui.table,sap.ui.ux3"
+    data-sap-ui-libs="sap.ui.commons,sap.ui.table,sap.ui.ux3,sap.viz"
     data-sap-ui-xx-preload="sync"
     ></script>
 
@@ -55,7 +55,11 @@
      // GET
      var url_getloginlogs = "/lock/api/service/getloginlogs/";
      
-
+     // GET
+	 var url_getlogincharts = "/lock/api/service/getloginchartdata/";
+     
+     // GET
+	 var url_getlogintimeline = "/lock/api/service/getlogincharttimeline/";
      
      // for POSTs
      var csrfToken = "&amp;csrf=" + "#{tokenMapper.getCsrfToken()}";

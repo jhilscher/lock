@@ -1,6 +1,15 @@
 package com.tao.lock.rest;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.annotation.ManagedBean;
 import javax.annotation.security.DenyAll;
@@ -22,6 +31,9 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.codehaus.jettison.json.JSONArray;
+import org.codehaus.jettison.json.JSONException;
+import org.codehaus.jettison.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -232,6 +244,11 @@ import com.tao.lock.utils.Roles;
 	    	return getGson().toJson(users);
 	    }
 	    
+	    
+	    /**
+	     *  **** LOGS ****	
+	     */
+
 	    @GET
 	    @Path("/getloginlogs/{username}")
 	    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -241,6 +258,122 @@ import com.tao.lock.utils.Roles;
 	    	List<UserLogJSON> jsons = connectionService.getLoginLog(userName);
 	    	
 	    	return getGson().toJson(jsons);
+	    }
+	    
+	    @GET
+	    @Path("/getloginchartdata/{username}")
+	    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	    @RolesAllowed(Roles.ADMIN)
+	    public String getLoginChartData(@PathParam("username") String userName) { 
+	    
+	    	List<UserLogJSON> jsons = connectionService.getLoginLog(userName);
+	    	
+	    	Map<String, int[]> aggregated = new HashMap<String, int[]> ();
+	    	
+	    	// fill map with data
+	    	for (UserLogJSON entry : jsons) {
+	    		
+	    		if (!aggregated.containsKey(entry.getIpAdress())) {
+		    		aggregated.put(entry.getIpAdress(), new int[2]);
+	    		}
+
+	    		int i = entry.getSuccess() == 1? 1 : 0;
+    			aggregated.get(entry.getIpAdress())[i]++;
+	    	}
+	    	
+	    	JSONArray jsonArray = new JSONArray();
+	    	
+	    	// convert map to JSON 
+	    	for (Map.Entry<String, int[]> entry : aggregated.entrySet()) {
+	    		JSONObject jsonObj = new JSONObject();
+	    		try {
+	    			
+					jsonObj.put("ipAdress", entry.getKey());
+		    		jsonObj.put("success", entry.getValue()[1]);
+		    		jsonObj.put("fail", entry.getValue()[0]);
+				
+		    		jsonArray.put(jsonObj);
+	    		} catch (JSONException e) {
+					e.printStackTrace();
+				}
+	    	}
+	    	
+	    	return jsonArray.toString();
+	    }
+	    
+	    @GET
+	    @Path("/getlogincharttimeline/{username}")
+	    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	    @RolesAllowed(Roles.ADMIN)
+	    public String getLoginChartTimeLine(@PathParam("username") String userName) throws ParseException { 
+	    
+	    	List<UserLogJSON> jsons = connectionService.getLoginLog(userName);
+	    	
+	    	Map<String, int[]> aggregated = new TreeMap<String, int[]> ();
+	    	
+	    	DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
+	    	
+	    	GregorianCalendar gcal = new GregorianCalendar();
+	    	Date end = new Date();
+	    	Date start = dateFormat.parse("2013/10/01");
+	    	
+	    	// fill map with data
+	    	for (UserLogJSON entry : jsons) {
+	    		
+	    		if (!aggregated.containsKey(dateFormat.format(entry.getTimeStamp()))) {
+		    		aggregated.put(dateFormat.format(entry.getTimeStamp()), new int[2]);
+	    		}
+
+	    		int i = entry.getSuccess() == 1? 1 : 0;
+    			aggregated.get(dateFormat.format(entry.getTimeStamp()))[i]++;
+	    	}
+	    	
+
+	    	JSONArray jsonArray = new JSONArray();
+	    	
+	    	gcal.setTime(start);
+	        while (gcal.getTime().before(end)) {
+
+	        	gcal.add(Calendar.DAY_OF_YEAR, 1);
+	        	
+	        	JSONObject jsonObj = new JSONObject();
+	        	
+	    		try {
+	    			if (!aggregated.containsKey(dateFormat.format(gcal.getTime()))) {
+						jsonObj.put("date", dateFormat.format(gcal.getTime()));
+			    		jsonObj.put("success", 0);
+			    		jsonObj.put("fail", 0);
+				
+	    			} else {
+	    				jsonObj.put("date", dateFormat.format(gcal.getTime()));
+			    		jsonObj.put("success", aggregated.get(dateFormat.format(gcal.getTime()))[1]);
+			    		jsonObj.put("fail", aggregated.get(dateFormat.format(gcal.getTime()))[0]);
+	    			}	
+			    	
+		    		jsonArray.put(jsonObj);
+	    		} catch (JSONException e) {
+					e.printStackTrace();
+				}
+	        	
+	        	
+	        }	
+	    	
+	    	// convert map to JSON 
+//	    	for (Map.Entry<Date, int[]> entry : aggregated.entrySet()) {
+//	    		JSONObject jsonObj = new JSONObject();
+//	    		try {
+//	    			
+//					jsonObj.put("date", entry.getKey());
+//		    		jsonObj.put("success", entry.getValue()[1]);
+//		    		jsonObj.put("fail", entry.getValue()[0]);
+//				
+//		    		jsonArray.put(jsonObj);
+//	    		} catch (JSONException e) {
+//					e.printStackTrace();
+//				}
+//	    	}
+	    	
+	    	return jsonArray.toString();
 	    }
 	    
 	    /**
@@ -370,6 +503,9 @@ import com.tao.lock.utils.Roles;
 	    	
 	    }
 
+	    
+	    
+	    
 	    /**
 	     * TEST Method for CSRF-Attack.
 	     * @param id
