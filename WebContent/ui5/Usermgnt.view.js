@@ -23,7 +23,9 @@ sap.ui.jsview("ui5.Usermgnt", {
 		
 		 // CREATE TABLE
 		
-		 //Create an instance of the table control
+		 /**
+		  * TABLE
+		  */
          var oTable2 = new sap.ui.table.Table({
          	title: "User Management",
          	visibleRowCount: 7,
@@ -32,7 +34,9 @@ sap.ui.jsview("ui5.Usermgnt", {
          	navigationMode: sap.ui.table.NavigationMode.Paginator
          });
 
-         //Define the columns and the control templates to be used
+         /**
+          * USERNAME
+          */
          oTable2.addColumn(new sap.ui.table.Column({
          	label: new sap.ui.commons.Label({text: "UserName"}),
          	template: new sap.ui.commons.TextView().bindProperty("text", "userName"),
@@ -41,6 +45,9 @@ sap.ui.jsview("ui5.Usermgnt", {
          	width: "100px"
          }));
 
+         /**
+          * EMAIL
+          */
          oTable2.addColumn(new sap.ui.table.Column({
          	label: new sap.ui.commons.Label({text: "eMail"}),
          	template: new sap.ui.commons.TextView().bindProperty("text", "email"),
@@ -49,6 +56,9 @@ sap.ui.jsview("ui5.Usermgnt", {
          	width: "100px"
          }));
          
+         /**
+          * DATE CREATED
+          */
          oTable2.addColumn(new sap.ui.table.Column({
          	label: new sap.ui.commons.Label({text: "Account Created At"}),
          	template: new sap.ui.commons.TextView().bindProperty("text", "createdAt"),
@@ -58,8 +68,10 @@ sap.ui.jsview("ui5.Usermgnt", {
          	hAlign: "Center"
          }));
          
-         /** EXPERIMENTAL**/
-         
+        
+         /**
+          * COMBOX BOX FOR SETTINGS
+          */
          var createComboBox = function () {
 	         
 	         // Create a ComboBox
@@ -103,16 +115,17 @@ sap.ui.jsview("ui5.Usermgnt", {
 		 };
 
          
-         /** END EXPERIMENTAL **/
-         
-         // securityLevel
+         /**
+          * SETTINGS
+          */
          oTable2.addColumn(new sap.ui.table.Column({
           	label: new sap.ui.commons.Label({text: "Security Settings"}),
           	template: createComboBox().bindProperty("selectedKey", "securityLevel")
           						.attachChange(function(oEvent){
           							var oContext = oEvent.getSource().getBindingContext();  
           							var val = this.getSelectedKey(); // geht
-          							alert(oContext.getProperty('userName') + "  --   " + val);
+          							//alert(oContext.getProperty('userName') + "  --   " + val);
+          							oController.setSettingsOfUser(oContext.getProperty('userName'), val);
           						}),
           	sortProperty: "securityLevel",
           	filterProperty: "securityLevel",
@@ -120,6 +133,9 @@ sap.ui.jsview("ui5.Usermgnt", {
           	hAlign: "Center"
           }));
          
+         /**
+          * REGISTERED
+          */
          oTable2.addColumn(new sap.ui.table.Column({
         		label: new sap.ui.commons.Label({text: "Mobile Registered?"}),
         		template: new sap.ui.commons.CheckBox({
@@ -131,6 +147,9 @@ sap.ui.jsview("ui5.Usermgnt", {
         		hAlign: "Center"
         	}));
          
+         /**
+          * REMOVE
+          */
          oTable2.addColumn(new sap.ui.table.Column({
          	label: new sap.ui.commons.Label({text: "Remove Mobile"}),
          	template: new sap.ui.commons.Button({
@@ -145,6 +164,9 @@ sap.ui.jsview("ui5.Usermgnt", {
          	width: "60px"
          }));
          
+         /**
+          * LOGS
+          */
          oTable2.addColumn(new sap.ui.table.Column({
           	label: new sap.ui.commons.Label({text: "Logon Logs"}),
           	template:  new sap.ui.commons.Button({
@@ -159,16 +181,54 @@ sap.ui.jsview("ui5.Usermgnt", {
     		hAlign: "Left"
           }));
          
+         
+		var createStatusBox = function () {
+			         
+			         // Create a ComboBox
+			         var statusBox = new sap.ui.commons.ComboBox();
+			         
+			         statusBox.setTooltip("securityLevel");
+			         statusBox.setEditable(true);
+			        
+			         statusBox.setWidth("100px");
+			         
+			         var oItem = new sap.ui.core.ListItem({
+			        	 key: 0
+			         });
+			         oItem.setText("Not Set");
+			         statusBox.addItem(oItem); 
+			         
+			         oItem = new sap.ui.core.ListItem({
+			        	 key: 1
+			         });
+			         oItem.setText("OK");
+			         
+			         statusBox.addItem(oItem);
+			         
+			         oItem = new sap.ui.core.ListItem({
+			        	 key: 2
+			         });
+			         oItem.setText("Blocked");
+			         
+			         statusBox.addItem(oItem);
+			         
+			         statusBox.setSelectedKey(1); // default
+			         
+			         return statusBox;
+		 };
+         
+         /**
+          * STATUS
+          */
          oTable2.addColumn(new sap.ui.table.Column({
-           	label: new sap.ui.commons.Label({text: "Login Chart"}),
-           	template:  new sap.ui.commons.Button({
-                 text : "show logs chart",
-                 tooltip : "Show the login logs of this user.",
-                 press : function(oEvent) {
-                 		var oContext = oEvent.getSource().getBindingContext();  
-                 		oController.showCharts(oContext.getProperty('userName'));
-                 	}
-         	}).bindProperty("enabled", "isRegistered", function (sValue) { return !!sValue; }),
+           	label: new sap.ui.commons.Label({text: "Account Status"}),
+           	template:  createStatusBox().bindProperty("selectedKey", "securityLevel")
+				.attachChange(function(oEvent){
+						var oContext = oEvent.getSource().getBindingContext();  
+						var val = this.getSelectedKey(); // geht
+						//alert(oContext.getProperty('userName') + "  --   " + val);
+						oController.setStatusOfUser(oContext.getProperty('userName'), val);
+					}),
            	width: "50px",
      		hAlign: "Left"
            }));

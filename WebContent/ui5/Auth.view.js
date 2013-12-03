@@ -96,8 +96,6 @@ sap.ui.jsview("ui5.Auth", {
 
 				 // stop interval
 				clearInterval(interval);
-				clearInterval(disposeinterval);
-
 				
 				// insert redirect button
 				oQRDialog.addButton(new sap.ui.commons.Button({
@@ -108,19 +106,6 @@ sap.ui.jsview("ui5.Auth", {
 			}
 		}
 		
-		// disable after 2 mins
-		var disposeinterval = setInterval(dispose, 2 * 1000 * 60);
-		
-		// 
-		function dispose() {
-			oQRDialog.close();
-    		oQRDialog.destroyContent();
-    		
-    		// stop interval
-			clearInterval(interval);
-			clearInterval(disposeinterval);
-			sap.ui.commons.MessageBox.alert("The time to register has run out.");
-		}
 		
 		if (qrUrl) 
 			interval = setInterval(request, 3000);

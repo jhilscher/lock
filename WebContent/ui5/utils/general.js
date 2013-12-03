@@ -23,6 +23,7 @@
 			            text : "Log On"
 			        }) ]
 			    }), new sap.ui.ux3.NavigationItem({
+			    	id: "usermanagement",
 			        key : "usermanagement",
 			        text : "User Management"})
 			    ],
@@ -46,7 +47,14 @@
 				    				press:function(oEvent){
 				    					openSettings(oEvent);
 				    				}
-				    			})
+				    			}), 
+				    			new sap.ui.commons.Button({
+				    				text:"Restricted",
+				    				tooltip:"Restricted",
+				    				press:function(oEvent){
+				    					window.location = "/lock/restricted";
+				    				}
+				    			}),
 			    ],
 			    
 			    
@@ -91,6 +99,7 @@
 			
 			try {
 		        shell.setSelectedWorksetItem(key);
+		        //shell.getWorksetItems().setKey(key);
 		    } catch (e) {
 		    }
 			

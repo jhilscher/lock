@@ -18,7 +18,14 @@
 		    showLogoutButton : true,
 		    headerItems : [ new sap.ui.commons.TextView({
 		        text : "{/userName}"
-		    }) ],
+		    }),
+		    new sap.ui.commons.Button({
+				text:"Home",
+				tooltip:"Home",
+				press:function(oEvent){
+					window.location = "/lock/";
+				}
+			})],
 		    
 		    
 			logout: function(){

@@ -102,7 +102,7 @@ import com.tao.lock.utils.Roles;
 	    @RolesAllowed(Roles.MANAGER)
 	    public Response authPolling() {
 	    	
-	    	if (request.getSession().getAttribute("auth") == "true")
+	    	if (userService.isUserAuthed(request))
 	    				return Response.ok().build();
 
 	    	return Response.status(Response.Status.UNAUTHORIZED).build();
@@ -169,7 +169,7 @@ import com.tao.lock.utils.Roles;
     		}
 
     		// Add to session
-    		user.getSession().setAttribute("auth", "true");
+    		user.getSession().setAttribute("auth", true);
 
     		return Response.status(Response.Status.CREATED).entity("success").build();
 	    }
@@ -220,6 +220,7 @@ import com.tao.lock.utils.Roles;
 	    /**
 	     * **** SERVICES FOR WEB-CLIENT ****
 	     */
+	    
 	    @GET
 	    @Path("/getallusers")
 	    @Produces(MediaType.APPLICATION_JSON)
@@ -234,6 +235,7 @@ import com.tao.lock.utils.Roles;
 	    		
 	    		if (pojo != null) {
 	    			cUser.setLastLogIn(pojo.getLoginAttempt());
+	    			cUser.setStatus(pojo.getStatus());
 	    			cUser.setIsRegistered(true);
 	    		} else {
 	    			cUser.setIsRegistered(false);
@@ -251,13 +253,16 @@ import com.tao.lock.utils.Roles;
 
 	    @GET
 	    @Path("/getloginlogs/{username}")
-	    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+	    @Produces(MediaType.APPLICATION_JSON) // geändert
 	    @RolesAllowed(Roles.ADMIN)
-	    public String getLoginLogs(@PathParam("username") String userName) { 
+	    public Response getLoginLogs(@PathParam("username") String userName) { 
 	    
-	    	List<UserLogJSON> jsons = connectionService.getLoginLog(userName);
+	    	List<UserLogJSON> logs = connectionService.getLoginLog(userName);
 	    	
-	    	return getGson().toJson(jsons);
+	    	if (logs == null)
+	    		return Response.status(Response.Status.NO_CONTENT).build();
+	    	
+	    	return Response.status(Response.Status.OK).entity(getGson().toJson(logs)).build();
 	    }
 	    
 	    @GET
@@ -431,8 +436,8 @@ import com.tao.lock.utils.Roles;
 	    	JsonObject jsonObject = new JsonObject();
 	    	jsonObject.addProperty("userName", user.getUserName());
 	    	
-	    	HttpSession session = request.getSession();
-	    	String auth = (String) session.getAttribute("auth") != "true"? "not logged in" : "logged in";
+	    	//HttpSession session = request.getSession();
+	    	String auth = !userService.isUserAuthed(request)? "not logged in" : "logged in";
 	    	
 	    	jsonObject.addProperty("isLoggedIn", auth);
 	    	jsonObject.addProperty("securityLevel", user.getSecurityLevel());
@@ -455,6 +460,49 @@ import com.tao.lock.utils.Roles;
 	    	userService.update(user);
 	    	
 	    	return Response.ok().build();
+	    }
+	    
+	    
+	    @POST
+	    @Path("/savesecuritylevelofuser")
+	    @RolesAllowed(Roles.ADMIN)
+	    public Response saveSecurityLevel(@FormParam("level") int level, @FormParam("username") String userName) {
+	    	
+	    	if (userName == null || userName == "")
+	    		return Response.status(Response.Status.BAD_REQUEST).build();
+	    		
+	    	CloudUser user = userService.getUserByName(userName);
+	    	
+	    	if(user == null)
+	    		return Response.noContent().build();
+	    	
+	    	if (level >= 3 || level < 0) // values 0,1,2 are valid
+	    		return Response.status(Response.Status.BAD_REQUEST).build();
+	    		    	
+	    	user.setSecurityLevel(level);
+	    	userService.update(user);
+	    	
+	    	return Response.ok().build();
+	    }
+	    
+	    @POST
+	    @Path("/setstatus")
+	    @RolesAllowed(Roles.ADMIN)
+	    public Response setStatus(@FormParam("status") int status, @FormParam("username") String userName) {
+	    
+	    	if (userName == null || userName == "")
+	    		return Response.status(Response.Status.BAD_REQUEST).build();
+	    	
+	    	ClientIdentifierPojo cId = new ClientIdentifierPojo();
+	    	cId.setUserName(userName);
+	    	cId.setStatus(status);
+	    	
+	    	if (connectionService.setStatusOfUser(cId)) {
+	    		return Response.status(Response.Status.OK).build();
+	    	} 
+	    	
+	    	return Response.status(Response.Status.NO_CONTENT).build();
+
 	    }
 	    
 	    @GET
@@ -503,8 +551,6 @@ import com.tao.lock.utils.Roles;
 	    	
 	    }
 
-	    
-	    
 	    
 	    /**
 	     * TEST Method for CSRF-Attack.

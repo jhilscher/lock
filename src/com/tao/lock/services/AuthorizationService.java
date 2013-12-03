@@ -1,4 +1,4 @@
-package com.tao.lock.security;
+package com.tao.lock.services;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;

@@ -19,7 +19,6 @@ import com.sap.security.um.user.UnsupportedUserAttributeException;
 import com.sap.security.um.user.User;
 import com.tao.lock.dao.UserDao;
 import com.tao.lock.entities.CloudUser;
-import com.tao.lock.security.AuthorizationService;
 import com.tao.lock.utils.Roles;
 
 /**
@@ -93,14 +92,14 @@ public class UserService {
 		User ssoUser = null;
 		CloudUser cloudUser = null;
 		
-		try {
-			cloudUser = (CloudUser)request.getSession().getAttribute("user");
-		} catch (Exception e) {
-			LOGGER.error("User not in session!", e.getMessage());
-		}
-		
-		if (cloudUser != null)
-			return cloudUser;
+//		try {
+//			cloudUser = (CloudUser)request.getSession().getAttribute("user");
+//		} catch (Exception e) {
+//			LOGGER.error("User not in session!", e.getMessage());
+//		}
+//		
+//		if (cloudUser != null)
+//			return cloudUser;
 		
 		try {
 			ssoUser = authorizationService.getUser(request);
@@ -136,5 +135,15 @@ public class UserService {
 	@RolesAllowed(Roles.ADMIN)
 	public CloudUser getUserById(long id) {
 		return userDao.getUserById(id);
+	}
+	
+	@RolesAllowed(Roles.EVERYONE)
+	public Boolean isUserAuthed(HttpServletRequest request) {
+		
+		if (request.getSession().getAttribute("auth") == null)
+			return false;
+		
+		return (Boolean) request.getSession().getAttribute("auth");
+		
 	}
 }

@@ -50,6 +50,8 @@
 	
 		 oImage.setBusy(true);
 
+		 
+		 var getQrImg = function () {
 			$.ajax({
 	   			type: "GET",
 	   			url: url_authQR,
@@ -63,26 +65,41 @@
 	   				}
 	   			}
 	   		});
+		 };
 			
-			oImage.placeAt("shellArea");
+		 
+		 getQrImg();
+		 oImage.placeAt("shellArea");
 
-			
-			var request = function() {
-					$.ajax({
-			   			type: "POST",
-			   			url: url_authPolling,
-			   			data: csrfToken,
-			   			complete: function (xhr, statusCode) {
-			   				if(xhr.status == '200') {
-			   					window.location = "/lock/";
-			   				} 
-			   			}
-			   		});
-			};
-			
+		// polling
+		var request = function() {
+				$.ajax({
+		   			type: "POST",
+		   			url: url_authPolling,
+		   			data: csrfToken,
+		   			complete: function (xhr, statusCode) {
+		   				if(xhr.status == '200') {
+		   					window.location = "/lock/restricted/";
+		   				} 
+		   			}
+		   		});
+		};
+		
 
-			var interval = setInterval(request, 3000);
-			
+		var interval = setInterval(request, 3000);
+		
+		var btn = new sap.ui.commons.Button({
+			text: "reload QR-Code",
+			press: function () {
+				getQrImg();
+			}
+		});
+
+		var devider2 = new sap.ui.commons.HorizontalDivider();
+		devider2.placeAt("shellArea");
+		
+		btn.placeAt("shellArea");
+		
 		</script>
 		
     </h:head>

@@ -40,7 +40,7 @@ public class CloudUser {
 	public static final String QUERY_BYUSERNAMEWITHIDENTIFIER = "getUserByUserNameWithIdentifier";
 	public static final String QUERY_BYUSERID = "getUserById";
 	
-	@Expose
+	//@Expose
     @Id
     @GeneratedValue
     private Long id;
@@ -66,7 +66,7 @@ public class CloudUser {
     private String email;
     
 	@Expose
-    @Column()
+    @Column
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdAt;
     
@@ -75,9 +75,13 @@ public class CloudUser {
     private Date lastLogIn;
 	
 	@Expose
-    @Column()
+    @Column
 	private Boolean isRegistered;
 	    
+	@Expose
+	@Transient
+	private int status;
+	
 	/*
 	 * 0: Restricted -> Default
 	 * 1: Always
@@ -223,6 +227,14 @@ public class CloudUser {
 
 	public void setSecurityLevel(int securityLevel) {
 		this.securityLevel = securityLevel;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
 	}
 
 

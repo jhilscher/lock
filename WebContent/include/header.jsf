@@ -35,6 +35,9 @@
      var url_saveSettings = "/lock/api/service/savesecuritylevel";
      
      // POST
+     var url_saveSettingsOfUser = "/lock/api/service/savesecuritylevelofuser";
+     
+     // POST
      var url_regPolling = "/lock/api/service/regpolling";
      
      // POST

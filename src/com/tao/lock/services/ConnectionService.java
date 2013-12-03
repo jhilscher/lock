@@ -399,6 +399,52 @@ public class ConnectionService {
 	}
 	
 
+	/**
+	 * Deletes the local data of a client.
+	 * @param ClientIdentifierPojo
+	 * @return Boolean if the command was successful.
+	 */
+	public Boolean setStatusOfUser(ClientIdentifierPojo cId) {
+		
+		try {
+			
+			
+			httpClient = getHttpClient();
+				
+			HttpPost post = new HttpPost("setstatus");
+			
+			// Build up JSON.
+			Gson gson = WebService.getGson();
+			String json = gson.toJson(cId);
+						
+	    	post.addHeader("Accept", "application/json");
+	    	post.addHeader("Content-Type", "application/json");
+
+	    	post.setEntity(new StringEntity(json));
+			
+			HttpResponse resp = httpClient.execute(post);
+			
+
+			int statusCode = resp.getStatusLine().getStatusCode();
+			
+			LOGGER.debug("DeleteClientIdentifier Statuscode: " + statusCode);
+			
+			if(statusCode != 200 && statusCode != 201)
+				return false;
+			
+			return true;
+			
+			} catch (ParseException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			} catch (HttpDestinationException e) {
+				e.printStackTrace();
+			}
+			
+			return false;
+		
+	}
 
 	/**
 	 * 

@@ -22,6 +22,32 @@ sap.ui.controller( "ui5.Usermgnt" ,{
 
 	dialog: null,
 	
+	// Alert, when there is no connection to SCC
+	showAlert: function () {
+		sap.ui.commons.MessageBox.alert("Error, no connection.");
+	},
+	
+	setSettingsOfUser: function(userName, value) {
+		
+		if (value < 0 || value > 2)
+			return;
+		
+		$.ajax({
+			type: "POST",
+			url: url_saveSettingsOfUser,
+			data: 'username=' + userName + '&level=' + value + csrfToken,
+			complete: function (xhr, statusCode) {
+				if(xhr.status == '200' || xhr.status == '201') {
+					sap.ui.commons.MessageBox.alert("Successfully saved settings of " + userName);
+				} 
+				else {
+					 sap.ui.commons.MessageBox.alert("Failed to save settings of " + userName);
+				}
+				
+			}
+		});
+	},
+	
 	/*
 	 * Deletes all client (mobile) related data of a user.
 	 * Reloads and refreshes the table afterwards.

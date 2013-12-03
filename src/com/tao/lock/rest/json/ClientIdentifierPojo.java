@@ -18,10 +18,6 @@ public class ClientIdentifierPojo {
 	@Expose
     private String userName;
         
-    /**
-     * hashed and salted client id.
-     * No need to store this in plain text.
-     */
     @Expose
     private String clientId;
 
@@ -38,6 +34,9 @@ public class ClientIdentifierPojo {
     private String userAgent;
     
     @Expose
+    private int status;
+    
+    @Expose
     private String secret;
     
 	public String getUserName() {
@@ -46,41 +45,6 @@ public class ClientIdentifierPojo {
 
 	public void setUserName(String userName) {
 		this.userName = userName;
-	}
-
-
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result
-				+ ((clientId == null) ? 0 : clientId.hashCode());
-		result = prime * result
-				+ ((userName == null) ? 0 : userName.hashCode());
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		ClientIdentifierPojo other = (ClientIdentifierPojo) obj;
-		if (clientId == null) {
-			if (other.clientId != null)
-				return false;
-		} else if (!clientId.equals(other.clientId))
-			return false;
-		if (userName == null) {
-			if (other.userName != null)
-				return false;
-		} else if (!userName.equals(other.userName))
-			return false;
-		return true;
 	}
 
 	public Date getCreated() {
@@ -123,20 +87,61 @@ public class ClientIdentifierPojo {
 		this.secret = secret;
 	}
 
-	@Override
-	public String toString() {
-		return "ClientIdentifierPojo [userName=" + userName
-				+ ", hashedClientId=" + clientId + ", created=" + created
-				+ ", loginAttempt=" + loginAttempt + ", ipAdress=" + ipAdress
-				+ ", userAgent=" + userAgent + ", secret=" + secret + "]";
-	}
-
 	public String getClientId() {
 		return clientId;
 	}
 
 	public void setClientId(String clientId) {
 		this.clientId = clientId;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((clientId == null) ? 0 : clientId.hashCode());
+		result = prime * result
+				+ ((userName == null) ? 0 : userName.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ClientIdentifierPojo other = (ClientIdentifierPojo) obj;
+		if (clientId == null) {
+			if (other.clientId != null)
+				return false;
+		} else if (!clientId.equals(other.clientId))
+			return false;
+		if (userName == null) {
+			if (other.userName != null)
+				return false;
+		} else if (!userName.equals(other.userName))
+			return false;
+		return true;
+	}
+	
+	@Override
+	public String toString() {
+		return "ClientIdentifierPojo [userName=" + userName + ", clientId="
+				+ clientId + ", created=" + created + ", loginAttempt="
+				+ loginAttempt + ", ipAdress=" + ipAdress + ", userAgent="
+				+ userAgent + ", status=" + status + ", secret=" + secret + "]";
 	}
 
 }

@@ -30,7 +30,7 @@ import com.tao.lock.services.UserService;
  * It checks the session for the attribute "auth".
  * If not, then redirects to the index-page.
  */
-@WebFilter("/restricted/*")
+@WebFilter()
 public class RestrictedFilter implements Filter {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(RestrictedFilter.class);
@@ -51,7 +51,7 @@ public class RestrictedFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 		
-		HttpSession session = req.getSession();
+		//HttpSession session = req.getSession();
 		
 		CloudUser cloudUser = userService.getCloudUser(req);
 		
@@ -61,7 +61,7 @@ public class RestrictedFilter implements Filter {
 		}
 		
 		// check if already logged in
-		if ((String) session.getAttribute("auth") == "true") {
+		if (userService.isUserAuthed(req)) {
 			chain.doFilter(req, res);
 			return;
 		}
