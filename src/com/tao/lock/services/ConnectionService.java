@@ -163,9 +163,9 @@ public class ConnectionService {
 	
 
 	/**
-	 * 
+	 * Gets the UserData from the Data Service
 	 * @param userName
-	 * @return
+	 * @return Data of this user.
 	 */
 	public ClientIdentifierPojo getClientIdentifierByUserName(String userName) {
 		try {
@@ -210,9 +210,9 @@ public class ConnectionService {
 	}
 	
 	/**
-	 * 
+	 * Requests a list of logs from the user.
 	 * @param userName
-	 * @return
+	 * @return List of Logs.
 	 */
 	public List<UserLogJSON> getLoginLog(String userName) {
 		try {
@@ -253,9 +253,9 @@ public class ConnectionService {
 	}
 	
 	/**
-	 * 
+	 * Requests an authentification token.
 	 * @param clientIdentifierPojo
-	 * @return
+	 * @return encrypted token as string
 	 */
 	public String requestToken(ClientIdentifierPojo clientIdentifierPojo) {
 		try {
@@ -303,7 +303,7 @@ public class ConnectionService {
 	 * @param token			Token response from mobile
 	 * @return UserName 	UserName if valid, null if not
 	 */
-	public String validateToken(String clientID, String token) {
+	public String validateToken(String clientID, String token, String ipAdress, String userAgent) {
 		try {
 
 			httpClient = getHttpClient();
@@ -316,7 +316,8 @@ public class ConnectionService {
 	    	JsonObject jsonObject = new JsonObject();
 	    	jsonObject.addProperty("clientId", clientID);
 	    	jsonObject.addProperty("token", token);
-	    	
+	    	jsonObject.addProperty("userAgent", userAgent);
+	    	jsonObject.addProperty("ipAdress", ipAdress);
 			
 			LOGGER.info("JSON Connection Call: " + jsonObject.toString());
 			

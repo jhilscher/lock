@@ -32,6 +32,9 @@ public class AuthentificationService {
 	@EJB
 	private ConnectionService connectionService;
 	
+	@EJB
+	private UserService userService;
+	
 	/**
 	 * 
 	 * Requests a QR-Code for Registration.
@@ -105,7 +108,8 @@ public class AuthentificationService {
 			}
 			
 			// if authed
-			if((String)request.getSession(false).getAttribute("auth") == "true") {
+			
+			if(userService.isUserAuthed(request)) {
 				return null;
 			}
 			
@@ -119,7 +123,7 @@ public class AuthentificationService {
 			clientIdentifierPojo.setUserName(cloudUser.getUserName());
 			
 			// add ip adress
-			clientIdentifierPojo.setIpAdress(request.getRemoteAddr());
+			clientIdentifierPojo.setIpAdress(UtilityMethods.getIpAdess(request));
 			
 			// add user agent
 			clientIdentifierPojo.setUserAgent(UtilityMethods.getShortUserAgentString(request));
@@ -127,6 +131,9 @@ public class AuthentificationService {
 			LOGGER.info("Request auth from: " + clientIdentifierPojo.toString());
 			
 			String token = connectionService.requestToken(clientIdentifierPojo);
+			
+			if (token == null)
+				return null;
 			
 			url = qrUtils.renderQR(token);
 	

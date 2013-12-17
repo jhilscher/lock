@@ -2,6 +2,8 @@ package com.tao.lock.rest.json;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import com.google.gson.annotations.Expose;
+
 /**
  * POJO used as JSON container.
  * @author Joerg Hilscher
@@ -10,7 +12,10 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class RegistrationJSON {
 
+	@Expose
 	private String x1;
+	
+	@Expose
 	private String clientIdKey;
 	
 	public String getX1() {

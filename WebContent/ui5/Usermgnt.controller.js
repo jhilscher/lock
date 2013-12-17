@@ -27,6 +27,24 @@ sap.ui.controller( "ui5.Usermgnt" ,{
 		sap.ui.commons.MessageBox.alert("Error, no connection.");
 	},
 	
+	allowUserToRegister: function (userName, value) {
+
+		$.ajax({
+			type: "POST",
+			url: url_allowRegister,
+			data: 'username=' + userName + '&register=' + value + csrfToken,
+			complete: function (xhr, statusCode) {
+				if(xhr.status == '200' || xhr.status == '201') {
+					sap.ui.commons.MessageBox.alert("Successfully saved settings of " + userName);
+				} 
+				else {
+					 sap.ui.commons.MessageBox.alert("Failed to save settings of " + userName);
+				}
+				
+			}
+		});
+	},
+	
 	setSettingsOfUser: function(userName, value) {
 		
 		if (value < 0 || value > 2)
@@ -42,6 +60,26 @@ sap.ui.controller( "ui5.Usermgnt" ,{
 				} 
 				else {
 					 sap.ui.commons.MessageBox.alert("Failed to save settings of " + userName);
+				}
+				
+			}
+		});
+	},
+	
+	setStatusOfUser: function(userName, value) {
+		if (value < 0 || value > 2)
+			return;
+		
+		$.ajax({
+			type: "POST",
+			url: url_saveStatus,
+			data: 'username=' + userName + '&status=' + value + csrfToken,
+			complete: function (xhr, statusCode) {
+				if(xhr.status == '200' || xhr.status == '201') {
+					sap.ui.commons.MessageBox.alert("Successfully saved status of " + userName);
+				} 
+				else {
+					 sap.ui.commons.MessageBox.alert("Failed to save status of " + userName);
 				}
 				
 			}
@@ -290,7 +328,7 @@ sap.ui.controller( "ui5.Usermgnt" ,{
     					function (sValue) { return (!!sValue)?  sap.ui.core.ValueState.Success : sap.ui.core.ValueState.Error; }),
 	         	sortProperty: "success",
 	         	filterProperty: "success",
-	         	width: "100px",
+	         	width: "40px",
 	         	
 	         }));
 
@@ -305,13 +343,31 @@ sap.ui.controller( "ui5.Usermgnt" ,{
 		
 	         //Define the columns and the control templates to be used
 	         oTable2.addColumn(new sap.ui.table.Column({
-	         	label: new sap.ui.commons.Label({text: "userAgent"}),
+	         	label: new sap.ui.commons.Label({text: "UserAgent"}),
 	         	template: new sap.ui.commons.TextView().bindProperty("text", "userAgent"),
 	         	sortProperty: "userAgent",
 	         	filterProperty: "userAgent",
 	         	width: "100px"
 	         }));
 
+		     // MOBILE
+	         oTable2.addColumn(new sap.ui.table.Column({
+	         	label: new sap.ui.commons.Label({text: "mobile IP-Adress"}),
+	         	template: new sap.ui.commons.TextView().bindProperty("text", "mobileIpAdress"),
+	         	sortProperty: "mobileIpAdress",
+	         	filterProperty: "mobileIpAdress",
+	         	width: "100px"
+	         }));
+		
+	         // MOBILE
+	         oTable2.addColumn(new sap.ui.table.Column({
+	         	label: new sap.ui.commons.Label({text: "mobile UserAgent"}),
+	         	template: new sap.ui.commons.TextView().bindProperty("text", "mobileUserAgent"),
+	         	sortProperty: "mobileUserAgent",
+	         	filterProperty: "mobileUserAgent",
+	         	width: "100px"
+	         }));
+	         
 	       //Define the columns and the control templates to be used
 	         oTable2.addColumn(new sap.ui.table.Column({
 	         	label: new sap.ui.commons.Label({text: "timeStamp"}),
@@ -339,7 +395,7 @@ sap.ui.controller( "ui5.Usermgnt" ,{
 
 	         
 	         //Initially sort the table -> timestamp desc
-	         oTable2.sort(oTable2.getColumns()[3], sap.ui.table.SortOrder.Descending);
+	         oTable2.sort(oTable2.getColumns()[5], sap.ui.table.SortOrder.Descending);
 
 	         
 	         oTable2.setBusy(false);

@@ -16,7 +16,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.tao.lock.entities.CloudUser;
+import com.tao.lock.rest.json.ClientIdentifierPojo;
+import com.tao.lock.services.ConnectionService;
 import com.tao.lock.services.UserService;
+import com.tao.lock.utils.UtilityMethods;
 
 /**
  *
@@ -34,6 +37,9 @@ public class GeneralFilter implements Filter {
 	@EJB
 	private UserService userService;
 
+	@EJB
+	private ConnectionService connectionService;
+	
 	@Override
 	public void destroy() {}
 
@@ -44,31 +50,51 @@ public class GeneralFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 		
+		
+		
 		try {
+			
+			// check path
+			String path = req.getRequestURI();
+			
+			// if on login-path, or on api for mobile access
+			if (path.endsWith("login.xhtml") || path.endsWith("/auth") 
+					|| path.endsWith("/getauthqr") || path.contains("/qrcodes/") || path.endsWith("/authpolling")) {
+				chain.doFilter(req, res);
+				return;
+			} 
 			
 			CloudUser cloudUser = userService.getCloudUser(req);
 			
-//			if (cloudUser != null) 
-//				req.getSession().setAttribute("user", cloudUser);
-			
 			// block, if sec-level is on "always".
 			if (cloudUser.getSecurityLevel() == 1) {
-				
-				// check path
-				String path = req.getRequestURI();
-				
-				// if on login-path, or on api for mobile access
-				if (path.endsWith("login.xhtml") || path.endsWith("/auth") 
-						|| path.endsWith("/getauthqr") || path.contains("/qrcodes/") || path.endsWith("/authpolling")) {
-					chain.doFilter(req, res);
-					return;
-				} 
-				
-				
+
 				if (!userService.isUserAuthed(req)) {
 					res.sendRedirect("/lock/login.xhtml");
 					return;
 				}
+			
+			// check if risk based auth	
+			} else if (cloudUser.getSecurityLevel() == 2) {
+				
+				ClientIdentifierPojo clientIdentifierPojo = new ClientIdentifierPojo();
+				clientIdentifierPojo.setUserName(cloudUser.getUserName());
+				clientIdentifierPojo.setIpAdress(UtilityMethods.getIpAdess(req));
+				
+				Double lvl = connectionService.getRiskLevel(clientIdentifierPojo);
+				
+				LOGGER.info("Risklevel of " + cloudUser.getUserName() + " :" + lvl);
+				
+				if (lvl > 0.0001) { // risk ok, let it pass
+		    		// Auth user to session
+		    		req.getSession().setAttribute("auth", true);
+					chain.doFilter(req, res);
+					
+				} else { // you shall not pass
+					res.sendRedirect("/lock/login.xhtml");
+				}
+				
+				return;
 			}
 			
 			

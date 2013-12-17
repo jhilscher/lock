@@ -25,7 +25,8 @@ sap.ui.jsview("ui5.Register", {
 		 elements.push(new sap.ui.commons.HorizontalDivider());
 		 
 		 _this.info = new sap.ui.commons.TextView({
-	            design : sap.ui.commons.TextViewDesign.bold
+	            design : sap.ui.commons.TextViewDesign.H2
+	            
 	     });
 		 
 		 var isRegistered = oController.isUserRegistered();
@@ -64,7 +65,7 @@ sap.ui.jsview("ui5.Register", {
 			oImage.setTooltip("Scan this QR-Code to register your Smartphone.");
 			oImage.setDecorative(false);
 			oQRDialog.addContent(oImage);
-			_this.regButton.setEnabled(false);
+			//_this.regButton.setEnabled(false);
 		} else {
 			 var oText = new sap.ui.commons.TextView({text: "Error. Maybe you don't have the rights to register."});
 			 oQRDialog.addContent(oText);

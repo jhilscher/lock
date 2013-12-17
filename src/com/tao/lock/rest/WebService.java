@@ -52,6 +52,7 @@ import com.tao.lock.services.ConnectionService;
 import com.tao.lock.services.UserService;
 import com.tao.lock.utils.QRUtils;
 import com.tao.lock.utils.Roles;
+import com.tao.lock.utils.UtilityMethods;
 
 
 	/**
@@ -138,13 +139,14 @@ import com.tao.lock.utils.Roles;
 	    @PermitAll 
 	    public Response auth(AuthentificationJSON authJSON) {
 
-    		if (authJSON == null || authJSON.getClientIdKey() == null || authJSON.getClientIdKey() == null) {
+    		if (authJSON == null || authJSON.getClientIdKey() == null) {
     			LOGGER.info("400: Bad request");
     			return Response.status(Response.Status.BAD_REQUEST).build();	
     		}
 	    	
     		// resp should be the user name
-    		String resp = connectionService.validateToken(authJSON.getClientIdKey(), authJSON.getX1());
+    		String resp = connectionService.validateToken(authJSON.getClientIdKey(), authJSON.getX1(), 
+    				UtilityMethods.getIpAdess(request), request.getHeader("User-Agent"));
     		
     		if (resp == null) {
     			LOGGER.info("403: user not found: ");
@@ -206,6 +208,7 @@ import com.tao.lock.utils.Roles;
 	    		return Response.status(Response.Status.FORBIDDEN).entity("error").build();
 	    	
 	    	// save user with identifier to db
+	    	user.setAllowRegister(false);
 	    	user.setIsRegistered(true);
 	    	userService.update(user);
 	    	
@@ -362,22 +365,7 @@ import com.tao.lock.utils.Roles;
 	        	
 	        	
 	        }	
-	    	
-	    	// convert map to JSON 
-//	    	for (Map.Entry<Date, int[]> entry : aggregated.entrySet()) {
-//	    		JSONObject jsonObj = new JSONObject();
-//	    		try {
-//	    			
-//					jsonObj.put("date", entry.getKey());
-//		    		jsonObj.put("success", entry.getValue()[1]);
-//		    		jsonObj.put("fail", entry.getValue()[0]);
-//				
-//		    		jsonArray.put(jsonObj);
-//	    		} catch (JSONException e) {
-//					e.printStackTrace();
-//				}
-//	    	}
-	    	
+	    		    	
 	    	return jsonArray.toString();
 	    }
 	    
@@ -441,6 +429,10 @@ import com.tao.lock.utils.Roles;
 	    	
 	    	jsonObject.addProperty("isLoggedIn", auth);
 	    	jsonObject.addProperty("securityLevel", user.getSecurityLevel());
+	    	jsonObject.addProperty("allowedRegister", user.getAllowRegister());
+	    	jsonObject.addProperty("userName", user.getUserName());
+	    	jsonObject.addProperty("email", user.getEmail());
+	    	jsonObject.addProperty("isRegistered", user.getIsRegistered());
 	    	return jsonObject.toString();
 	    }
 	    
@@ -505,6 +497,32 @@ import com.tao.lock.utils.Roles;
 
 	    }
 	    
+	    /**
+	     * Admin can set a flag, weather a user can register
+	     * @param register
+	     * @param userName
+	     * @return
+	     */
+	    @POST
+	    @Path("/allowRegister")
+	    @RolesAllowed(Roles.ADMIN)
+	    public Response allowUserToRegister(@FormParam("register") Boolean register, @FormParam("username") String userName) {
+	    
+	    	if (userName == null || userName == "")
+	    		return Response.status(Response.Status.BAD_REQUEST).build();
+	    	
+	    	CloudUser user = userService.getUserByName(userName);
+	    	
+	    	if (user == null)
+	    		return Response.status(Response.Status.NO_CONTENT).build();
+	    		
+	    	user.setAllowRegister(register);
+	    	userService.update(user);
+	    	
+	    	return Response.status(Response.Status.OK).build();
+
+	    }
+	    
 	    @GET
 	    @Path("/getregisterqr")
 	    @RolesAllowed(Roles.MANAGER)
@@ -512,7 +530,7 @@ import com.tao.lock.utils.Roles;
 	    	
 	    	CloudUser user = userService.getCloudUser(request);
 	    	
-	    	if (user == null)
+	    	if (user == null || !user.getAllowRegister())
 	    		return Response.status(Response.Status.FORBIDDEN).entity("error").build();
 	    	
 	    	String url = authentificationService.registerUser(request, context, user);

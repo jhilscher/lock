@@ -50,6 +50,11 @@
 	
 		 oImage.setBusy(true);
 
+		 var msg = new sap.ui.commons.TextView({
+			 	semanticColor: sap.ui.commons.TextViewColor.Critical,
+				design: sap.ui.commons.TextViewDesign.H1
+		 });
+	
 		 
 		 var getQrImg = function () {
 			$.ajax({
@@ -58,10 +63,14 @@
 	   			complete: function (xhr, statusCode) {
 	   				if(xhr.status == '200') {
 	   					qrUrl = xhr.responseText;
+	   					oImage.setVisible(true);
 	   					oImage.setBusy(false);
 	   					oImage.setSrc(qrUrl);
+	   					msg.setVisible(false);
 	   				} else {
-	   					qrUrl = false;
+	   					oImage.setVisible(false);
+	   					msg.setText('Your account is currently blocked!');
+	   					msg.setVisible(true);
 	   				}
 	   			}
 	   		});
@@ -69,6 +78,11 @@
 			
 		 
 		 getQrImg();
+
+		 
+		 msg.placeAt("shellArea");
+		 msg.setVisible(false);
+		 
 		 oImage.placeAt("shellArea");
 
 		// polling

@@ -25,7 +25,7 @@ sap.ui.jsview("ui5.Auth", {
 		 elements.push(new sap.ui.commons.HorizontalDivider());
 		 
 		 _this.info = new sap.ui.commons.TextView({
-	            design : sap.ui.commons.TextViewDesign.bold
+	            design : sap.ui.commons.TextViewDesign.H2
 	     });
 		 
 		 var isRegistered = oController.isUserRegistered();
@@ -61,12 +61,12 @@ sap.ui.jsview("ui5.Auth", {
 		if (qrUrl) {
 			var oImage = new sap.ui.commons.Image("qrCodeAuth");
 			oImage.setSrc(qrUrl);
-			oImage.setTooltip("Scan this QR-Code to login.");
+			oImage.setTooltip("Scan this QR-Code to log on.");
 			oImage.setDecorative(false);
 			oQRDialog.addContent(oImage);
-			_this.authButton.setEnabled(false);
+			//_this.authButton.setEnabled(false);
 		} else {
-			 var oText = new sap.ui.commons.TextView({text: "Error. Maybe you don't have the rights to log in."});
+			 var oText = new sap.ui.commons.TextView({text: "Error. Maybe you don't have the rights to log on."});
 			 oQRDialog.addContent(oText);
 		}
         
@@ -109,10 +109,6 @@ sap.ui.jsview("ui5.Auth", {
 		
 		if (qrUrl) 
 			interval = setInterval(request, 3000);
-
-		
+	
 	}
-	
-	
-      
 });

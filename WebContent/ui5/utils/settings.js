@@ -64,10 +64,6 @@ var openSettings = function () {
 	}
 	
     oSegmentedButton.setSelectedButton(activButton);
-//    oSegmentedButton.attachSelect(function(oEvent) {
-//            if (oEvent.getParameters().selectedButtonId != activButton)
-//            	
-//    });
 	
 	// add to dialog
     settingsDialog.addContent(oSegmentedButton);

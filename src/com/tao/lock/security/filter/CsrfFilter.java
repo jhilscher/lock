@@ -31,12 +31,18 @@ public class CsrfFilter implements Filter {
 	
 	private static final String PARAM_EXCLUDE = "exclude";
 	
+	@SuppressWarnings("unused")
 	private static final String PARAM_ENTRY_POINTS = "entryPoints"; // currently not used
 	
+	private static final int VIOLATION_STATUSCODE = 400;
 	
 	@Override
 	public void destroy() { }
 
+	/**
+	 * Filters requests for the csrf-token.
+	 * In the web.xml there are excludes specified, which are excluded.
+	 */
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response,
 			FilterChain chain) throws IOException, ServletException {
@@ -56,6 +62,7 @@ public class CsrfFilter implements Filter {
 		for (int i = 0; i < exludeEntries.length; i++) {
 			
 			// FIXME: make this better
+			// this does not correctly check for an url-match
 			if (currentUrl.contains(exludeEntries[i])) {
 				chain.doFilter(req, res); 
 				return;
@@ -71,7 +78,7 @@ public class CsrfFilter implements Filter {
 			
 			LOGGER.info("CSRF Filter: no attribute set.");
 			
-			res.sendError(400); 
+			res.sendError(VIOLATION_STATUSCODE); 
 			return;
 		}
 		
@@ -82,7 +89,7 @@ public class CsrfFilter implements Filter {
 		if (session.getAttribute(CsrfListener.CSRFTOKEN).toString().equals(parameter)) {
 			chain.doFilter(req, res); 
 		} else {
-			res.sendError(400); // send statuscode 400
+			res.sendError(VIOLATION_STATUSCODE); // send statuscode 400
 		}
 	
 

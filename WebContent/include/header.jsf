@@ -25,6 +25,8 @@
      // all mapped urls
      // global scope
      
+     var isAdmin = #{tokenMapper.isUserAdmin()};
+     
      // for GETS
      var getToken = "?csrf=#{tokenMapper.getCsrfToken()}";
      
@@ -38,10 +40,16 @@
      var url_saveSettingsOfUser = "/lock/api/service/savesecuritylevelofuser";
      
      // POST
+     var url_saveStatus = "/lock/api/service/setstatus";
+     
+     // POST
      var url_regPolling = "/lock/api/service/regpolling";
      
      // POST
      var url_authPolling = "/lock/api/service/authpolling";
+     
+     // POST
+     var url_allowRegister = "/lock/api/service/allowRegister";
      
      // GET
      var url_regQR = "/lock/api/service/getregisterqr" + getToken;

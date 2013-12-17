@@ -40,7 +40,7 @@ public class CloudUser {
 	public static final String QUERY_BYUSERNAMEWITHIDENTIFIER = "getUserByUserNameWithIdentifier";
 	public static final String QUERY_BYUSERID = "getUserById";
 	
-	//@Expose
+	@Expose
     @Id
     @GeneratedValue
     private Long id;
@@ -77,7 +77,11 @@ public class CloudUser {
 	@Expose
     @Column
 	private Boolean isRegistered;
-	    
+	   
+	@Expose
+    @Column
+	private Boolean allowRegister;
+	
 	@Expose
 	@Transient
 	private int status;
@@ -107,6 +111,11 @@ public class CloudUser {
         if (isRegistered == null )  
         {  
         	isRegistered = false;
+        }
+        
+        if (allowRegister == null )  
+        {  
+        	allowRegister = false;
         }
     }
     
@@ -235,6 +244,14 @@ public class CloudUser {
 
 	public void setStatus(int status) {
 		this.status = status;
+	}
+
+	public Boolean getAllowRegister() {
+		return allowRegister;
+	}
+
+	public void setAllowRegister(Boolean allowRegister) {
+		this.allowRegister = allowRegister;
 	}
 
 

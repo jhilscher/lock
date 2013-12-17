@@ -12,7 +12,6 @@ import javax.servlet.ServletResponse;
 import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +20,7 @@ import com.tao.lock.entities.CloudUser;
 import com.tao.lock.rest.json.ClientIdentifierPojo;
 import com.tao.lock.services.ConnectionService;
 import com.tao.lock.services.UserService;
+import com.tao.lock.utils.UtilityMethods;
 
 /**
  * FROM: http://www.oraclejavamagazine-digital.com/javamagazine_open/20130102#pg64
@@ -51,8 +51,6 @@ public class RestrictedFilter implements Filter {
 		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 		
-		//HttpSession session = req.getSession();
-		
 		CloudUser cloudUser = userService.getCloudUser(req);
 		
 		// cancel if user is unknown or not registered
@@ -71,13 +69,15 @@ public class RestrictedFilter implements Filter {
 			
 			ClientIdentifierPojo clientIdentifierPojo = new ClientIdentifierPojo();
 			clientIdentifierPojo.setUserName(cloudUser.getUserName());
-			clientIdentifierPojo.setIpAdress(req.getRemoteAddr());
+			clientIdentifierPojo.setIpAdress(UtilityMethods.getIpAdess(req));
 			
 			Double lvl = connectionService.getRiskLevel(clientIdentifierPojo);
 			
 			LOGGER.info("Risklevel of " + cloudUser.getUserName() + " :" + lvl);
 			
-			if (lvl > 0.0) { // risk ok, let it pass
+			if (lvl > 0.0001) { // risk ok, let it pass
+				// Auth user to session
+	    		req.getSession().setAttribute("auth", true);
 				chain.doFilter(req, res);
 			} else { // you shall not pass
 				res.sendRedirect("/lock/login.xhtml");

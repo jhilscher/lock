@@ -21,6 +21,12 @@ public class UserLogJSON {
 	@Expose
 	private int success;
 
+	@Expose
+	private String mobileUserAgent;
+	
+	@Expose
+	private String mobileIpAdress;
+	
 	public String getUserAgent() {
 		return userAgent;
 	}
