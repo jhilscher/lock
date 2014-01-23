@@ -75,7 +75,7 @@ public class RestrictedFilter implements Filter {
 			
 			LOGGER.info("Risklevel of " + cloudUser.getUserName() + " :" + lvl);
 			
-			if (lvl > 0.0001) { // risk ok, let it pass
+			if (lvl != null && lvl > 0.0001) { // risk ok, let it pass
 				// Auth user to session
 	    		req.getSession().setAttribute("auth", true);
 				chain.doFilter(req, res);

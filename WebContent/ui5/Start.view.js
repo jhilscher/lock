@@ -40,7 +40,8 @@ sap.ui.jsview("ui5.Start", {
 		 var sHtmlText = '<h2>Lock Sample App</h2>';
 			sHtmlText+= 'this app will demonstrate the "lock" two-factor authentification (2FA).';
 			sHtmlText += '<br>Some facts:';
-			sHtmlText += '<ul><li>this app is running on HANA Cloud Platform</li><li>all sensitive data is hosted locally</li>';
+			sHtmlText += '<ul><li>this app is running on HANA Cloud Platform</li>';
+			sHtmlText += '<li>all sensitive data is hosted locally</li>';
 			sHtmlText += '<li>to use 2FA get and register the Android lock app</li></ul>';
 
 			

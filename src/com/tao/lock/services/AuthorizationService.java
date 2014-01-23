@@ -42,6 +42,7 @@ public class AuthorizationService {
 		
 		try {
 			user = getUser(request);
+			
 		} catch (NamingException e) {
 			LOGGER.error(e.getMessage(), e);
 		}

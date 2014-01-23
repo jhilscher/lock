@@ -66,14 +66,15 @@ public class GeneralFilter implements Filter {
 			
 			CloudUser cloudUser = userService.getCloudUser(req);
 			
+			if (userService.isUserAuthed(req)) {
+				chain.doFilter(req, res);
+				return;
+			}
+			
 			// block, if sec-level is on "always".
 			if (cloudUser.getSecurityLevel() == 1) {
-
-				if (!userService.isUserAuthed(req)) {
 					res.sendRedirect("/lock/login.xhtml");
-					return;
-				}
-			
+					return;			
 			// check if risk based auth	
 			} else if (cloudUser.getSecurityLevel() == 2) {
 				

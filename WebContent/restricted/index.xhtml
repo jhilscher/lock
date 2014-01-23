@@ -62,13 +62,13 @@
 			oFTV1.setHtmlText(sHtmlText);
 
 		 
-		 // MATRIX
-		 var oMatrix = new sap.ui.commons.layout.MatrixLayout({layoutFixed: true, width: '800px', columns: 2});
-		 oMatrix.setWidths('270px', '330px');
+		// MATRIX
+		var oMatrix = new sap.ui.commons.layout.MatrixLayout({layoutFixed: true, width: '800px', columns: 2});
+		oMatrix.setWidths('270px', '330px');
 
-		 oMatrix.createRow(oImage, oFTV1);
+		oMatrix.createRow(oImage, oFTV1);
 		 
-		 elements.push(oMatrix);
+		elements.push(oMatrix);
 		
 		
 		managerShell.setContent(elements, true);

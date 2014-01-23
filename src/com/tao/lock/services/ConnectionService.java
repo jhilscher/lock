@@ -479,7 +479,7 @@ public class ConnectionService {
 		LOGGER.debug("registerUser Statuscode: " + statusCode);
 		
 		if(statusCode != 200 && statusCode != 201)
-			return null;
+			return 0.0;
 		
 		String respToString = EntityUtils.toString(entity);
 		
