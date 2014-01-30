@@ -170,8 +170,6 @@
   <resource-ref>  
     <res-ref-name>connect</res-ref-name>  
     <res-type>com.sap.core.connectivity.api.http.HttpDestination</res-type> 
-    <res-auth>Container</res-auth>
-    <lookup-name>lock/connect</lookup-name>
   </resource-ref>  
   
   <!-- SERVLET -->

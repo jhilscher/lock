@@ -21,10 +21,19 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
-import com.sap.core.connectivity.api.HttpDestination;
-//import com.sap.core.connectivity.api.DestinationException;
-//import com.sap.core.connectivity.api.http.HttpDestination;
-import com.sap.core.connectivity.httpdestination.api.HttpDestinationException;
+//import com.sap.core.connectivity.api.HttpDestination;
+////import com.sap.core.connectivity.api.DestinationException;
+////import com.sap.core.connectivity.api.http.HttpDestination;
+//import com.sap.core.connectivity.httpdestination.api.HttpDestinationException;
+
+
+
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
+import com.sap.core.connectivity.api.DestinationException;
+import com.sap.core.connectivity.api.http.HttpDestination;
 import com.tao.lock.rest.WebService;
 import com.tao.lock.rest.json.ClientIdentifierPojo;
 import com.tao.lock.rest.json.UserLogJSON;
@@ -39,7 +48,6 @@ import com.tao.lock.utils.JsonDateDeserializer;
  * Exchanges user-data.
  *
  */
-@SuppressWarnings("deprecation")
 @Stateless
 public class ConnectionService {
 
@@ -53,11 +61,15 @@ public class ConnectionService {
 	/**
 	 * Gets a HttpClient from the platform api.
 	 * @return HttpClient
+	 * @throws NamingException 
+	 * @throws DestinationException 
 	 * @throws HttpDestinationException
+	 * //HttpDestination httpDestination = com.sap.core.connectivity.httpdestination.api.HttpDestinationFactory.getHttpDestination("connect");
 	 */
-	private HttpClient getHttpClient() throws HttpDestinationException {
-		HttpDestination httpDestination = com.sap.core.connectivity.httpdestination.api.HttpDestinationFactory.getHttpDestination("connect");
-		return httpDestination.createHttpClient();
+	private HttpClient getHttpClient() throws NamingException, DestinationException  {		
+		Context ctx = new InitialContext();
+		HttpDestination destination = (HttpDestination) ctx.lookup("java:comp/env/connect");
+		return destination.createHttpClient();
 	}
 	
 	/**
@@ -106,9 +118,13 @@ public class ConnectionService {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (HttpDestinationException e) {
+		} catch (NamingException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} catch (DestinationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
 		
 		return null;
 	}
@@ -154,9 +170,13 @@ public class ConnectionService {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (HttpDestinationException e) {
+		} catch (NamingException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		} catch (DestinationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} 
 		
 		return false;
 	}
@@ -202,9 +222,13 @@ public class ConnectionService {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
-			} catch (HttpDestinationException e) {
+			} catch (NamingException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			} catch (DestinationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
 			
 			return null;
 	}
@@ -245,9 +269,13 @@ public class ConnectionService {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
-			} catch (HttpDestinationException e) {
+			} catch (NamingException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			} catch (DestinationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
 			
 			return null;
 	}
@@ -290,9 +318,13 @@ public class ConnectionService {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
-			} catch (HttpDestinationException e) {
+			} catch (NamingException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			} catch (DestinationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
 			
 			return null;
 	}
@@ -344,9 +376,13 @@ public class ConnectionService {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
-			} catch (HttpDestinationException e) {
+			} catch (NamingException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			} catch (DestinationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
 			
 			return null;
 	}
@@ -391,9 +427,13 @@ public class ConnectionService {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
-			} catch (HttpDestinationException e) {
+			} catch (NamingException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
+			} catch (DestinationException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} 
 			
 			return false;
 		
@@ -439,7 +479,11 @@ public class ConnectionService {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
-			} catch (HttpDestinationException e) {
+			} catch (NamingException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (DestinationException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 			
@@ -496,7 +540,11 @@ public class ConnectionService {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
-		} catch (HttpDestinationException e) {
+		} catch (NamingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (DestinationException e) {
+			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		

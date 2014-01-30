@@ -208,7 +208,7 @@ sap.ui.controller( "ui5.Usermgnt" ,{
                                 name : 'success', 
                                 value : '{success}'},
                         {
-                                name : 'fails', 
+                                name : 'fail', 
                                 value : '{fail}'
                         } 
                 ],
@@ -272,7 +272,7 @@ sap.ui.controller( "ui5.Usermgnt" ,{
                                 name : 'success', 
                                 value : '{success}'},
                         {
-                                name : 'fails', 
+                                name : 'fail', 
                                 value : '{fail}'
                         } 
                 ],
@@ -319,6 +319,7 @@ sap.ui.controller( "ui5.Usermgnt" ,{
 	         	navigationMode: sap.ui.table.NavigationMode.Paginator,
 	         });
 
+		 
 	         //Define the columns and the control templates to be used
 	         oTable2.addColumn(new sap.ui.table.Column({
 	         	label: new sap.ui.commons.Label({text: "Successful"}),

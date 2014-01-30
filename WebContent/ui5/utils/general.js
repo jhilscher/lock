@@ -3,7 +3,7 @@
 		 * Admin Shell
 		 */	
 		var shell = new sap.ui.ux3.Shell("userShell", {
-		    appTitle : "Lock Sample App",
+		    appTitle : "HANA Cloud App",
 		    appIcon: "https://sapui5.hana.ondemand.com/sdk/test-resources/sap/ui/ux3/demokit/images/SAPLogo.gif",
 		    
 		    worksetItems : [ new sap.ui.ux3.NavigationItem({
